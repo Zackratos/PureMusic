@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="max" format="integer"/>
+    <attr name="pointer_color" format="color"/>
+    <attr name="pointer_halo_color" format="color"/>
+    <attr name="start_angle" format="float"/>
+    <attr name="end_angle" format="float"/>
+
+
+
+
+    <declare-styleable name="HoloCircleSeekBar">
+        <attr name="wheel_size" format="integer" />
+        <attr name="pointer_size" format="dimension" />
+        <attr name="max"/>
+        <attr name="show_text" format="boolean"/>
+        <attr name="start_angle"/>
+        <attr name="end_angle"/>
+        <attr name="text_size" format="dimension"/>
+        <attr name="init_position" format="integer"/>
+        <attr name="wheel_active_color" format="color"/>
+        <attr name="wheel_unactive_color" format="color"/>
+        <attr name="pointer_color"/>
+        <attr name="pointer_halo_color"/>
+        <attr name="text_color" format="string"/>
+    </declare-styleable>
+
+
+    <declare-styleable name="CircularSeekBar">
+        <attr name="progress" format="integer"/>
+        <attr name="max"/>
+        <attr name="move_outside_circle" format="boolean"/>
+        <attr name="maintain_equal_circle" format="boolean"/>
+        <attr name="use_custom_radii" format="boolean"/>
+        <attr name="lock_enabled" format="boolean"/>
+        <attr name="circle_x_radius" format="dimension" />
+        <attr name="circle_y_radius" format="dimension" />
+        <attr name="circle_stroke_width" format="dimension" />
+        <attr name="pointer_radius" format="dimension" />
+        <attr name="pointer_halo_width" format="dimension" />
+        <attr name="pointer_halo_border_width" format="dimension"/>
+        <attr name="circle_color" format="color"/>
+        <attr name="circle_progress_color" format="color"/>
+        <attr name="pointer_color"/>
+        <attr name="pointer_halo_color"/>
+        <attr name="pointer_halo_color_ontouch" format="color"/>
+        <attr name="pointer_alpha_ontouch" format="integer"/>
+        <attr name="start_angle"/>
+        <attr name="end_angle"/>
+        <attr name="circle_fill" format="color"/>
+    </declare-styleable>
+</resources>
