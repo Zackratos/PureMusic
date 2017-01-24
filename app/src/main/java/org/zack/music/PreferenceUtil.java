@@ -29,6 +29,7 @@ public class PreferenceUtil {
         getEditor(context).putInt("current", current).apply();
     }
 
+
     public static boolean isRandomPlay(Context context) {
         return getPreferences(context).getBoolean("randomPlay", false);
     }

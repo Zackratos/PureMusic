@@ -17,7 +17,7 @@
         android:background="?android:attr/selectableItemBackground">
 
         <ImageView
-            android:id="@+id/music_background"
+            android:id="@+id/music_icon"
             android:layout_width="60dp"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"

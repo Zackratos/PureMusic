@@ -25,13 +25,13 @@
             android:tint="@color/halfTransparent"
             android:src="@drawable/replay_icon"/>
         <ImageView
-            android:id="@+id/middle_rewind"
+            android:id="@+id/middle_previous"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:clickable="true"
             android:background="?android:attr/selectableItemBackground"
-            android:src="@drawable/rewind_icon"/>
+            android:src="@drawable/previous_icon"/>
         <ImageView
             android:id="@+id/middle_play"
             android:layout_width="wrap_content"
@@ -41,13 +41,13 @@
             android:background="?android:attr/selectableItemBackground"
             android:src="@drawable/play_icon"/>
         <ImageView
-            android:id="@+id/middle_forward"
+            android:id="@+id/middle_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:clickable="true"
             android:background="?android:attr/selectableItemBackground"
-            android:src="@drawable/forward_icon"/>
+            android:src="@drawable/next_icon"/>
         <ImageView
             android:id="@+id/middle_shuffle"
             android:layout_width="wrap_content"

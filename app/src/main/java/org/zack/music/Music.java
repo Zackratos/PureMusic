@@ -7,11 +7,22 @@ import android.graphics.Bitmap;
  */
 public class Music {
     private String title;
+    private String name;
     private String album;
     private String artist;
     private String path;
-    private Bitmap background;
-    private int duration;
+    private Bitmap image;
+    private long duration;
+
+    private Music(MusicBuilder builder) {
+        title = builder.title;
+        name = builder.name;
+        album = builder.album;
+        artist = builder.artist;
+        path = builder.path;
+        image = builder.image;
+        duration = builder.duration;
+    }
 
     public String getPath() {
         return path;
@@ -21,21 +32,12 @@ public class Music {
         this.path = path;
     }
 
-    private Music(MusicBuilder builder) {
-        title = builder.title;
-        album = builder.album;
-        artist = builder.artist;
-        background = builder.background;
-        duration = builder.duration;
-
+    public Bitmap getImage() {
+        return image;
     }
 
-    public Bitmap getBackground() {
-        return background;
-    }
-
-    public void setBackground(Bitmap background) {
-        this.background = background;
+    public void setImage(Bitmap image) {
+        this.image = image;
     }
 
     public String getAlbum() {
@@ -54,11 +56,11 @@ public class Music {
         this.artist = artist;
     }
 
-    public int getDuration() {
+    public long getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(long duration) {
         this.duration = duration;
     }
 
@@ -71,18 +73,31 @@ public class Music {
         this.title = title;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
 
     public static class MusicBuilder {
         private String title;
+        private String name;
         private String album;
         private String artist;
-        private Bitmap background;
-        private int duration;
-        private long size;
+        private String path;
+        private Bitmap image;
+        private long duration;
 
         public MusicBuilder title(String title) {
             this.title = title;
+            return this;
+        }
+
+        public MusicBuilder name(String name) {
+            this.name = name;
             return this;
         }
 
@@ -96,12 +111,17 @@ public class Music {
             return this;
         }
 
-        public MusicBuilder background(Bitmap background) {
-            this.background = background;
+        public MusicBuilder path(String path) {
+            this.path = path;
             return this;
         }
 
-        public MusicBuilder duration(int duration) {
+        public MusicBuilder image(Bitmap image) {
+            this.image = image;
+            return this;
+        }
+
+        public MusicBuilder duration(long duration) {
             this.duration = duration;
             return this;
         }
