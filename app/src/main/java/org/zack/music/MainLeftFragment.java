@@ -35,14 +35,7 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class MainLeftFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private MainLeftListener listener;
 
@@ -67,8 +60,6 @@ public class MainLeftFragment extends Fragment {
     public static MainLeftFragment newInstance() {
         MainLeftFragment fragment = new MainLeftFragment();
         Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -76,37 +67,9 @@ public class MainLeftFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
 
         listAdapter = new ListAdapter();
 
-/*        final Handler handler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                if (msg.what == 0) {
-                    listAdapter.notifyDataSetChanged();
-                }
-            }
-        };
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                musics = getMusicList();
-                Message msg = handler.obtainMessage();
-                msg.what = 0;
-                handler.sendMessage(msg);
-            }
-        }).start();*/
         new AsyncTask<Void, Void, Boolean>() {
 
             @Override
@@ -128,7 +91,7 @@ public class MainLeftFragment extends Fragment {
                         @Override
                         protected Boolean doInBackground(Void... voids) {
                             for (Music music : musics) {
-                                music.setBackground(createAlbumArt(music.getPath()));
+                                music.setImage(createAlbumArt(music.getPath()));
                             }
                             return true;
                         }
@@ -177,10 +140,15 @@ public class MainLeftFragment extends Fragment {
                     String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
                     String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
                     String path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
-                    Music music = new Music.MusicBuilder().builder();
-                    music.setTitle(title);
-                    music.setAlbum(album);
-                    music.setPath(path);
+                    String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
+                    long duration = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
+                    Music music = new Music.MusicBuilder()
+                            .title(title)
+                            .album(album)
+                            .path(path)
+                            .name(name)
+                            .duration(duration)
+                            .builder();
 //                    music.setBackground(createAlbumArt(path));
                     musics.add(music);
                 }
@@ -208,8 +176,8 @@ public class MainLeftFragment extends Fragment {
         } finally {
             try {
                 retriever.release();
-            } catch (Exception e2) {
-                e2.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return bitmap;
@@ -219,24 +187,24 @@ public class MainLeftFragment extends Fragment {
     private class ListViewHolder extends RecyclerView.ViewHolder {
         private TextView titleView;
         private TextView albumView;
-        private ImageView backgroundView;
+        private ImageView iconView;
         public ListViewHolder(View itemView) {
             super(itemView);
             titleView = (TextView) itemView.findViewById(R.id.music_title);
-            backgroundView = (ImageView) itemView.findViewById(R.id.music_background);
+            iconView = (ImageView) itemView.findViewById(R.id.music_icon);
         }
 
         public void initView(int position) {
             final Music music = musics.get(position);
-            titleView.setText(music.getTitle());
-            Bitmap background = music.getBackground();
+            titleView.setText(music.getTitle() != null ? music.getTitle() : music.getName());
+            Bitmap icon = music.getImage();
 
 //            backgroundView.setImageBitmap(background == null ?
 //                    BitmapFactory.decodeResource(getResources(), R.drawable.album_icon) : background);
-            if (background != null) {
-                backgroundView.setImageBitmap(background);
+            if (icon != null) {
+                iconView.setImageBitmap(icon);
             } else {
-                backgroundView.setImageResource(R.drawable.album_icon);
+                iconView.setImageResource(R.drawable.album_icon);
             }
 
 /*            if (background != null) {
@@ -292,7 +260,6 @@ public class MainLeftFragment extends Fragment {
     }
 
     interface MainLeftListener {
-        List<Music> getMusicList();
         void putMusicList(List<Music> musics);
     }
     
