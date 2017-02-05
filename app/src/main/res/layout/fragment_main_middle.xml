@@ -16,7 +16,7 @@
         android:gravity="center_vertical"
         android:layout_alignParentBottom="true">
         <ImageView
-            android:id="@+id/middle_replay"
+            android:id="@+id/middle_cycle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -79,7 +79,6 @@
             android:layout_height="wrap_content"
             app:dsb_min="0"
             app:dsb_max="100"
-            app:dsb_indicatorFormatter="00"
             app:dsb_progressColor="@android:color/white"
             app:dsb_trackColor="@color/halfTransparent"
             app:dsb_indicatorColor="@color/halfTransparent"
@@ -106,12 +105,14 @@
             android:paddingRight="20dp"
             android:layout_alignParentBottom="true">
             <TextView
+                android:id="@+id/middle_bottom_current_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="00:00"
                 android:textSize="20dp"
                 android:textColor="@android:color/white"/>
             <TextView
+                android:id="@+id/middle_bottom_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -161,12 +162,14 @@
             android:layout_gravity="center"
             android:gravity="center_horizontal">
             <TextView
+                android:id="@+id/middle_current_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="00:00"
                 android:textSize="60dp"
                 android:textColor="@android:color/white"/>
             <TextView
+                android:id="@+id/middle_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="04:32"

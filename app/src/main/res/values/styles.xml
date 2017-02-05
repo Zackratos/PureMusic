@@ -10,6 +10,7 @@
 
     <style name="MusicPlayerTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@android:color/transparent</item>
+        <item name="colorAccent">@color/white</item>
     </style>
 
     <style name="TransparentTheme" parent="MusicPlayerTheme">

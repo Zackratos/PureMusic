@@ -28,12 +28,14 @@ public class MainActivity extends BaseActivity {
     private ServiceConnection connection;
     private PlayService.PlayBinder playBinder;
 
+    private MainMiddleFragment mmFragment;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initView();
         initService();
+        initView();
     }
 
 
@@ -83,43 +85,51 @@ public class MainActivity extends BaseActivity {
 
         dl = (DrawerLayout) findViewById(R.id.main_drawer);
         FragmentManager fm = getSupportFragmentManager();
-        final MainMiddleFragment mmFragment = MainMiddleFragment.newInstance();
+        mmFragment = MainMiddleFragment.newInstance();
         MainLeftFragment mlFragment = MainLeftFragment.newInstance();
         mmFragment.setMainMiddleListener(new MainMiddleFragment.MainMiddleListener() {
             @Override
             public boolean isPlaying() {
                 return playBinder.isPlaying();
             }
-            @Override
-            public boolean isPause() {
-                return playBinder.isPause();
-            }
-            @Override
-            public void setDataSource(String path) {
-                playBinder.setDataSource(path);
-            }
-            @Override
-            public void play() {
-                playBinder.play();
-            }
-            @Override
-            public void pause() {
-                playBinder.pause();
-            }
-            @Override
-            public void next() {
 
-            }
             @Override
-            public void previous() {
+            public void clickPlay() {
+                playBinder.clickPlay();
+            }
 
+            @Override
+            public void clickNext() {
+                playBinder.clickNext();
+            }
+
+            @Override
+            public void clickPrevious() {
+                playBinder.clickPrevious();
+            }
+
+            @Override
+            public void clickRandom() {
+                playBinder.clickRandom();
+            }
+
+            @Override
+            public void clickCycle() {
+                playBinder.clickCycle();
+            }
+
+            @Override
+            public long getDuration(int position) {
+                return playBinder.getDuration(position);
             }
         });
 
         mlFragment.setMainLeftListener(new MainLeftFragment.MainLeftListener() {
             @Override
-            public void putMusicList(List<Music> musics) {
-                mmFragment.setMusicList(musics);
+            public void clickPosition(int position) {
+                playBinder.clickPosition(position);
+                dl.closeDrawer(Gravity.LEFT, true);
+                mmFragment.clickPosition(position);
             }
         });
 
@@ -140,6 +150,12 @@ public class MainActivity extends BaseActivity {
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                 playBinder = (PlayService.PlayBinder) iBinder;
                 PlayService service = playBinder.getPlayService();
+                service.setCallBack(new PlayService.CallBack() {
+                    @Override
+                    public void setDuration(long duration) {
+                        mmFragment.setDuration(duration);
+                    }
+                });
             }
 
             @Override

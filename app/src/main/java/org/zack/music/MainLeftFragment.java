@@ -26,14 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link MainLeftFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link MainLeftFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class MainLeftFragment extends Fragment {
 
 
@@ -48,15 +41,6 @@ public class MainLeftFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MainLeftFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static MainLeftFragment newInstance() {
         MainLeftFragment fragment = new MainLeftFragment();
         Bundle args = new Bundle();
@@ -75,9 +59,6 @@ public class MainLeftFragment extends Fragment {
             @Override
             protected Boolean doInBackground(Void... voids) {
                 musics = getMusicList();
-                if (listener != null) {
-                    listener.putMusicList(musics);
-                }
                 return true;
             }
 
@@ -194,7 +175,7 @@ public class MainLeftFragment extends Fragment {
             iconView = (ImageView) itemView.findViewById(R.id.music_icon);
         }
 
-        public void initView(int position) {
+        public void initView(final int position) {
             final Music music = musics.get(position);
             titleView.setText(music.getTitle() != null ? music.getTitle() : music.getName());
             Bitmap icon = music.getImage();
@@ -206,7 +187,14 @@ public class MainLeftFragment extends Fragment {
             } else {
                 iconView.setImageResource(R.drawable.album_icon);
             }
-
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (listener != null) {
+                        listener.clickPosition(position);
+                    }
+                }
+            });
 /*            if (background != null) {
                 backgroundView.setImageBitmap(background);
                 music.setBackground(background);
@@ -260,7 +248,8 @@ public class MainLeftFragment extends Fragment {
     }
 
     interface MainLeftListener {
-        void putMusicList(List<Music> musics);
+//        void putMusicList(List<Music> musics);
+        void clickPosition(int position);
     }
     
 
