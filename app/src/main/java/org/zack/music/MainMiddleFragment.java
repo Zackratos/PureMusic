@@ -161,7 +161,7 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
         void clickRandom();
         void clickCycle();
 
-        long getDuration(int position);
+//        long getDuration(int position);
     }
 
     public void setMainMiddleListener(MainMiddleListener listener) {

@@ -16,6 +16,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -194,6 +195,7 @@ public class PlayService extends Service {
             } else {
                 if (!isPause && musics != null && musics.size() > 0) {
                     setDataSource(musics.get(current).getPath());
+                    Log.d("TAG", "jaljfaldsjfda");
                 }
                 mp.start();
             }

@@ -118,10 +118,6 @@ public class MainActivity extends BaseActivity {
                 playBinder.clickCycle();
             }
 
-            @Override
-            public long getDuration(int position) {
-                return playBinder.getDuration(position);
-            }
         });
 
         mlFragment.setMainLeftListener(new MainLeftFragment.MainLeftListener() {
@@ -129,7 +125,7 @@ public class MainActivity extends BaseActivity {
             public void clickPosition(int position) {
                 playBinder.clickPosition(position);
                 dl.closeDrawer(Gravity.LEFT, true);
-                mmFragment.clickPosition(position);
+//                mmFragment.clickPosition(position);
             }
         });
 
