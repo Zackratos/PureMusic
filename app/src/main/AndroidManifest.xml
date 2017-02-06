@@ -26,16 +26,17 @@
         <activity
             android:name=".MainActivity"
             android:theme="@style/TransparentTheme"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".SetupActivity"
             android:theme="@style/TransparentTheme"
+            android:parentActivityName=".MainActivity"
             android:label="设置">
 
         </activity>

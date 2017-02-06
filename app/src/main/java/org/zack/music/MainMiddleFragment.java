@@ -31,7 +31,7 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
 
     private MainMiddleListener listener;
 
-//    private boolean playing;
+    //    private boolean playing;
 //    private int current;
     private int position = 0;
     private boolean random;
@@ -41,6 +41,10 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
     private ImageView previousView;
     private ImageView nextView;
     private TextView durationView, bottomDurationView;
+    private TextView currentView, bottomCurrentView;
+
+    private DiscreteSeekBar lineSeekBar;
+    private CircularSeekBar circleSeekBar;
 
 
     public static MainMiddleFragment newInstance() {
@@ -76,7 +80,7 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
             case R.id.middle_play:
                 if (listener != null) {
                     listener.clickPlay();
-                    playView.setImageResource(listener.isPlaying() ? R.drawable.pause_icon : R.drawable.play_icon);
+//                    playView.setImageResource(listener.isPlaying() ? R.drawable.pause_icon : R.drawable.play_icon);
                 }
                 break;
 
@@ -109,16 +113,23 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
         nextView = (ImageView) view.findViewById(R.id.middle_next);
         durationView = (TextView) view.findViewById(R.id.middle_duration);
         bottomDurationView = (TextView) view.findViewById(R.id.middle_bottom_duration);
+        currentView = (TextView) view.findViewById(R.id.middle_current_time);
+        bottomCurrentView = (TextView) view.findViewById(R.id.middle_bottom_current_time);
 //        durationView.setText(getDurationText(listener.getDuration()));
         playView.setOnClickListener(this);
         previousView.setOnClickListener(this);
         nextView.setOnClickListener(this);
-        final DiscreteSeekBar lineSeekBar = (DiscreteSeekBar) view.findViewById(R.id.middle_line_seekBar);
-        final CircularSeekBar circleSeekBar = (CircularSeekBar) view.findViewById(R.id.middle_circle_seekBar);
+        lineSeekBar = (DiscreteSeekBar) view.findViewById(R.id.middle_line_seekBar);
+        circleSeekBar = (CircularSeekBar) view.findViewById(R.id.middle_circle_seekBar);
         lineSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-//                circleSeekBar.setProgress(value);
+                if (fromUser) {
+                    circleSeekBar.setProgress(value);
+                    String durationText = getDurationText(value);
+                    currentView.setText(durationText);
+                    bottomCurrentView.setText(durationText);
+                }
             }
 
             @Override
@@ -128,19 +139,24 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
 
             @Override
             public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
-
+                listener.progressChange(seekBar.getProgress());
             }
         });
 
         circleSeekBar.setOnSeekBarChangeListener(new CircularSeekBar.OnCircularSeekBarChangeListener() {
             @Override
             public void onProgressChanged(CircularSeekBar circularSeekBar, int progress, boolean fromUser) {
-
+                if (fromUser) {
+                    lineSeekBar.setProgress(progress);
+                    String durationText = getDurationText(progress);
+                    currentView.setText(durationText);
+                    bottomCurrentView.setText(durationText);
+                }
             }
 
             @Override
             public void onStopTrackingTouch(CircularSeekBar seekBar) {
-
+                listener.progressChange(seekBar.getProgress());
             }
 
             @Override
@@ -154,12 +170,17 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
     }
 
     interface MainMiddleListener {
-        boolean isPlaying();
         void clickPlay();
+
         void clickNext();
+
         void clickPrevious();
+
         void clickRandom();
+
         void clickCycle();
+
+        void progressChange(int progress);
 
 //        long getDuration(int position);
     }
@@ -168,29 +189,52 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
         this.listener = listener;
     }
 
-    public void clickPosition(int position) {
-        playView.setImageResource(R.drawable.pause_icon);
-//        String durationText = getDurationText(listener.getDuration(position));
-//        durationView.setText(durationText);
-//        bottomDurationView.setText(durationText);
-    }
 
     public void setDuration(long duration) {
-        String durationText = getDurationText(duration);
+        int durationSecond = getDurationSecond(duration);
+        String durationText = getDurationText(durationSecond);
+
         durationView.setText(durationText);
         bottomDurationView.setText(durationText);
+
+        lineSeekBar.setMax(durationSecond);
+        circleSeekBar.setMax(durationSecond);
+
+        lineSeekBar.setProgress(0);
+        circleSeekBar.setProgress(0);
+
+        currentView.setText("00:00");
+        bottomCurrentView.setText("00:00");
     }
 
 
-    private long getDurationSecond(long duration) {
+    public void initPlayView(boolean isPlaying) {
+        if (isPlaying) {
+            playView.setImageResource(R.drawable.pause_icon);
+        } else {
+            playView.setImageResource(R.drawable.play_icon);
+        }
+    }
+
+    public void updateTime(int time) {
+        int durationSecond = getDurationSecond(time);
+        String durationText = getDurationText(durationSecond);
+        currentView.setText(durationText);
+        bottomCurrentView.setText(durationText);
+        lineSeekBar.setProgress(durationSecond);
+        circleSeekBar.setProgress(durationSecond);
+    }
+
+
+    private int getDurationSecond(long duration) {
         return Math.round(duration / 1000);
     }
 
-    private String getDurationText(long duration) {
+    private String getDurationText(int duration) {
 
-        long secondCount = getDurationSecond(duration);
-        long minute = secondCount / 60;
-        long second = secondCount % 60;
+//        int secondCount = getDurationSecond(duration);
+        long minute = duration / 60;
+        long second = duration % 60;
         String minuteText;
         String secondText;
         if (minute < 10) {

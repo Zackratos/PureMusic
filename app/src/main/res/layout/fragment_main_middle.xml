@@ -116,7 +116,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:text="04:32"
+                android:text="01:40"
                 android:textSize="20dp"
                 android:textColor="@android:color/white"/>
         </RelativeLayout>
@@ -172,7 +172,7 @@
                 android:id="@+id/middle_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="04:32"
+                android:text="01:40"
                 android:textSize="60dp"
                 android:textColor="@android:color/white"/>
         </LinearLayout>

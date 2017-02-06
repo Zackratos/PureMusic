@@ -68,6 +68,9 @@ public class MainActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         unbindService(connection);
+        if (!playBinder.isPlaying()) {
+            stopService(PlayService.newIntent(this));
+        }
     }
 
     private void initView() {
@@ -88,10 +91,6 @@ public class MainActivity extends BaseActivity {
         mmFragment = MainMiddleFragment.newInstance();
         MainLeftFragment mlFragment = MainLeftFragment.newInstance();
         mmFragment.setMainMiddleListener(new MainMiddleFragment.MainMiddleListener() {
-            @Override
-            public boolean isPlaying() {
-                return playBinder.isPlaying();
-            }
 
             @Override
             public void clickPlay() {
@@ -118,6 +117,10 @@ public class MainActivity extends BaseActivity {
                 playBinder.clickCycle();
             }
 
+            @Override
+            public void progressChange(int progress) {
+                playBinder.progressChange(progress);
+            }
         });
 
         mlFragment.setMainLeftListener(new MainLeftFragment.MainLeftListener() {
@@ -148,8 +151,19 @@ public class MainActivity extends BaseActivity {
                 PlayService service = playBinder.getPlayService();
                 service.setCallBack(new PlayService.CallBack() {
                     @Override
-                    public void setDuration(long duration) {
-                        mmFragment.setDuration(duration);
+                    public void onMusicChange(Music music) {
+                        mmFragment.setDuration(music.getDuration());
+                        setTitle(music.getTitle());
+                    }
+
+                    @Override
+                    public void initPlayView(boolean isPlaying) {
+                        mmFragment.initPlayView(isPlaying);
+                    }
+
+                    @Override
+                    public void updateTime(int time) {
+                        mmFragment.updateTime(time);
                     }
                 });
             }
@@ -160,5 +174,6 @@ public class MainActivity extends BaseActivity {
             }
         };
         bindService(PlayService.newIntent(this), connection, BIND_AUTO_CREATE);
+        startService(PlayService.newIntent(this));
     }
 }

@@ -66,12 +66,12 @@ public class SetupFragment extends Fragment {
         final AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
         parentActivity.setSupportActionBar(toolbar);
         parentActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+/*        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 parentActivity.finish();
             }
-        });
+        });*/
         return view;
     }
 

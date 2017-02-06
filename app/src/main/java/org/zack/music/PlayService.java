@@ -13,6 +13,7 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.v7.app.NotificationCompat;
@@ -31,6 +32,9 @@ public class PlayService extends Service {
     private List<Music> musics;
     private boolean random;
 
+    private Handler handler;
+    private Runnable runnable;
+
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, PlayService.class);
         return intent;
@@ -42,7 +46,60 @@ public class PlayService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         PlayBinder playBinder = new PlayBinder();
+        current = PreferenceUtil.getCurrent(this);
 
+        mp = new MediaPlayer();
+        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                if (musics != null && current < musics.size() -1) {
+                    setDataSource(musics.get(++current));
+//                    mp.start();
+                    startPlay();
+                }
+            }
+        });
+
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                musics = getMusicList();
+                return true;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean aBoolean) {
+                if (aBoolean && musics.size() > 0) {
+                    setDataSource(musics.get(current));
+                }
+/*                if (aBoolean && callBack != null && musics.size() > 0) {
+                    callBack.setDuration(musics.get(current).getDuration());
+                }*/
+            }
+        }.execute();
+
+
+
+
+        Notification notification = new NotificationCompat.Builder(this)
+                .setContentTitle("sjlf")
+                .setContentText("sjldfkj")
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .build();
+
+        startForeground(1, notification);
+
+        handler = new Handler();
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                Log.d("TAG", "updateTime");
+                callBack.updateTime(mp.getCurrentPosition());
+                handler.postDelayed(this, 1000);
+            }
+        };
         return playBinder;
     }
 
@@ -55,7 +112,20 @@ public class PlayService extends Service {
                 musics = getMusicList();
             }
         }).start();*/
-        current = PreferenceUtil.getCurrent(this);
+/*        current = PreferenceUtil.getCurrent(this);
+
+        mp = new MediaPlayer();
+        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                if (musics != null && current < musics.size() -1) {
+                    setDataSource(musics.get(++current));
+//                    mp.start();
+                    startPlay();
+                }
+            }
+        });
 
         new AsyncTask<Void, Void, Boolean>() {
             @Override
@@ -66,28 +136,18 @@ public class PlayService extends Service {
 
             @Override
             protected void onPostExecute(Boolean aBoolean) {
-                if (aBoolean && callBack != null) {
-                    callBack.setDuration(musics.get(current).getDuration());
+                if (aBoolean && musics.size() > 0) {
+                    setDataSource(musics.get(current));
                 }
+*//*                if (aBoolean && callBack != null && musics.size() > 0) {
+                    callBack.setDuration(musics.get(current).getDuration());
+                }*//*
             }
         }.execute();
 
-        mp = new MediaPlayer();
 
 
-        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                if (current < musics.size() -1) {
-                    setDataSource(musics.get(++current).getPath());
-                    mp.start();
-                    if (callBack != null) {
-                        callBack.setDuration(musics.get(current).getDuration());
-                    }
-                }
-            }
-        });
+
         Notification notification = new NotificationCompat.Builder(this)
                 .setContentTitle("sjlf")
                 .setContentText("sjldfkj")
@@ -96,6 +156,16 @@ public class PlayService extends Service {
                 .build();
 
         startForeground(1, notification);
+
+        handler = new Handler();
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                Log.d("TAG", "updateTime");
+                callBack.updateTime(mp.getCurrentPosition());
+                handler.postDelayed(this, 1000);
+            }
+        };*/
     }
 
     @Override
@@ -107,6 +177,7 @@ public class PlayService extends Service {
             mp = null;
         }
         PreferenceUtil.putCurrent(this, current);
+        handler.removeCallbacks(runnable);
     }
 
 
@@ -161,20 +232,44 @@ public class PlayService extends Service {
     }
 
 
-    private void setDataSource(String path) {
+    private void setDataSource(Music music) {
+        if (callBack != null) {
+            callBack.onMusicChange(music);
+            Log.d("TAG", "callBack != null");
+        }
         try {
             mp.reset();
-            mp.setDataSource(path);
+            mp.setDataSource(music.getPath());
             mp.prepare();
+            Log.d("TAG", "mp.prepare");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
 
+    private void startPlay() {
+        mp.start();
+        if (callBack != null) {
+            callBack.initPlayView(true);
+        }
+
+        handler.removeCallbacks(runnable);
+        handler.post(runnable);
+    }
+
+    private void pausePlay() {
+        mp.pause();
+        if (callBack != null) {
+            callBack.initPlayView(false);
+        }
+        handler.removeCallbacks(runnable);
+    }
+
+
     class PlayBinder extends Binder {
 
-        private boolean isPause;
+//        private boolean isPause;
 
 
         public PlayService getPlayService() {
@@ -185,39 +280,35 @@ public class PlayService extends Service {
             return mp.isPlaying();
         }
 
-
-        
-
         public void clickPlay() {
-            if (mp.isPlaying()) {
-                mp.pause();
-                isPause = true;
-            } else {
-                if (!isPause && musics != null && musics.size() > 0) {
-                    setDataSource(musics.get(current).getPath());
-                    Log.d("TAG", "jaljfaldsjfda");
+            if (musics.size() > 0) {
+                if (mp.isPlaying()) {
+                    pausePlay();
+                } else {
+                    startPlay();
                 }
-                mp.start();
             }
         }
 
         public void clickNext() {
             boolean isPlaying = mp.isPlaying();
             if (current < musics.size() - 1) {
-                setDataSource(musics.get(++current).getPath());
+                setDataSource(musics.get(++current));
             }
             if (isPlaying) {
-                mp.start();
+//                mp.start();
+                startPlay();
             }
         }
 
         public void clickPrevious() {
             boolean isPlaying = mp.isPlaying();
             if (current > 0) {
-                setDataSource(musics.get(--current).getPath());
+                setDataSource(musics.get(--current));
             }
             if (isPlaying) {
-                mp.start();
+//                mp.start();
+                startPlay();
             }
         }
 
@@ -229,20 +320,29 @@ public class PlayService extends Service {
 
         }
 
-        public void clickPosition(int position) {
-            if (musics != null && musics.size() > 0)
-            setDataSource(musics.get(position).getPath());
-            mp.start();
-            current = position;
+        public void progressChange(int progress) {
+            mp.seekTo(progress * 1000);
         }
 
-        public long getDuration(int position) {
-            return musics.get(position).getDuration();
+        public void clickPosition(int position) {
+            if (musics != null && musics.size() > 0) {
+                boolean isPlaying = mp.isPlaying();
+                setDataSource(musics.get(position));
+                current = position;
+                if (isPlaying) {
+//                    mp.start();
+                    startPlay();
+                }
+            }
         }
+
     }
 
     public interface CallBack {
-        void setDuration(long duration);
+//        void setDuration(long duration);
+        void onMusicChange(Music music);
+        void initPlayView(boolean isPlaying);
+        void updateTime(int time);
     }
 
     public void setCallBack(CallBack callBack) {
