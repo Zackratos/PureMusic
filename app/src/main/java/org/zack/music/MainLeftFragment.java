@@ -13,8 +13,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v4.text.TextUtilsCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -177,7 +179,7 @@ public class MainLeftFragment extends Fragment {
 
         public void initView(final int position) {
             final Music music = musics.get(position);
-            titleView.setText(music.getTitle() != null ? music.getTitle() : music.getName());
+            titleView.setText(!TextUtils.isEmpty(music.getTitle()) ? music.getTitle() : music.getName());
             Bitmap icon = music.getImage();
 
 //            backgroundView.setImageBitmap(background == null ?

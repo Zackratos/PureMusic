@@ -45,7 +45,22 @@ public class PlayService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        Log.d("TAG", "onBind");
         PlayBinder playBinder = new PlayBinder();
+
+        return playBinder;
+    }
+
+    @Override
+    public void onCreate() {
+        Log.d("TAG", "onCreate");
+        super.onCreate();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                musics = getMusicList();
+            }
+        }).start();
         current = PreferenceUtil.getCurrent(this);
 
         mp = new MediaPlayer();
@@ -73,9 +88,7 @@ public class PlayService extends Service {
                 if (aBoolean && musics.size() > 0) {
                     setDataSource(musics.get(current));
                 }
-/*                if (aBoolean && callBack != null && musics.size() > 0) {
-                    callBack.setDuration(musics.get(current).getDuration());
-                }*/
+
             }
         }.execute();
 
@@ -100,72 +113,6 @@ public class PlayService extends Service {
                 handler.postDelayed(this, 1000);
             }
         };
-        return playBinder;
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-/*        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                musics = getMusicList();
-            }
-        }).start();*/
-/*        current = PreferenceUtil.getCurrent(this);
-
-        mp = new MediaPlayer();
-        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                if (musics != null && current < musics.size() -1) {
-                    setDataSource(musics.get(++current));
-//                    mp.start();
-                    startPlay();
-                }
-            }
-        });
-
-        new AsyncTask<Void, Void, Boolean>() {
-            @Override
-            protected Boolean doInBackground(Void... voids) {
-                musics = getMusicList();
-                return true;
-            }
-
-            @Override
-            protected void onPostExecute(Boolean aBoolean) {
-                if (aBoolean && musics.size() > 0) {
-                    setDataSource(musics.get(current));
-                }
-*//*                if (aBoolean && callBack != null && musics.size() > 0) {
-                    callBack.setDuration(musics.get(current).getDuration());
-                }*//*
-            }
-        }.execute();
-
-
-
-
-        Notification notification = new NotificationCompat.Builder(this)
-                .setContentTitle("sjlf")
-                .setContentText("sjldfkj")
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .build();
-
-        startForeground(1, notification);
-
-        handler = new Handler();
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                Log.d("TAG", "updateTime");
-                callBack.updateTime(mp.getCurrentPosition());
-                handler.postDelayed(this, 1000);
-            }
-        };*/
     }
 
     @Override
@@ -334,6 +281,13 @@ public class PlayService extends Service {
                     startPlay();
                 }
             }
+        }
+
+        public Music getMusic() {
+            if (musics != null && musics.size() > 0) {
+                return musics.get(current);
+            }
+            return null;
         }
 
     }

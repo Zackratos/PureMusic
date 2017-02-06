@@ -13,6 +13,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -147,13 +149,23 @@ public class MainActivity extends BaseActivity {
         connection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                Log.d("TAG", "onServiceConnected");
                 playBinder = (PlayService.PlayBinder) iBinder;
+                Music music = playBinder.getMusic();
+                if (music != null) {
+                    mmFragment.setDuration(music.getDuration());
+                    setTitle(TextUtils.isEmpty(music.getTitle()) ? music.getName() : music.getTitle());
+                    mmFragment.initPlayView(playBinder.isPlaying());
+                }
+
+
                 PlayService service = playBinder.getPlayService();
+
                 service.setCallBack(new PlayService.CallBack() {
                     @Override
                     public void onMusicChange(Music music) {
                         mmFragment.setDuration(music.getDuration());
-                        setTitle(music.getTitle());
+                        setTitle(TextUtils.isEmpty(music.getTitle()) ? music.getName() : music.getTitle());
                     }
 
                     @Override
