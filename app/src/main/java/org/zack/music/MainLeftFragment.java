@@ -56,7 +56,7 @@ public class MainLeftFragment extends Fragment {
 
         listAdapter = new ListAdapter();
 
-        new AsyncTask<Void, Void, Boolean>() {
+/*        new AsyncTask<Void, Void, Boolean>() {
 
             @Override
             protected Boolean doInBackground(Void... voids) {
@@ -89,7 +89,7 @@ public class MainLeftFragment extends Fragment {
                 }
 
             }
-        }.execute();
+        }.execute();*/
 
 
     }
@@ -112,58 +112,35 @@ public class MainLeftFragment extends Fragment {
     }
 
 
-    private List<Music> getMusicList() {
-        ContentResolver cr = getActivity().getContentResolver();
-        Cursor cursor = cr.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                null, null, null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
-        List<Music> musics = new ArrayList<>();
-        try {
-            if (cursor.moveToFirst()) {
-                while (cursor.moveToNext()) {
-                    String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
-                    String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
-                    String path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
-                    String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
-                    long duration = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
-                    Music music = new Music.MusicBuilder()
-                            .title(title)
-                            .album(album)
-                            .path(path)
-                            .name(name)
-                            .duration(duration)
-                            .builder();
-//                    music.setBackground(createAlbumArt(path));
-                    musics.add(music);
+    public void setMusics(final List<Music> musics) {
+        this.musics = musics;
+        listAdapter.notifyDataSetChanged();
+/*        final Handler handler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                if (msg.what == 0) {
+                    listAdapter.notifyDataSetChanged();
                 }
+                return false;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return musics;
+        });
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (Music music : musics) {
+                    music.setImage(Music.createAlbumArt(music.getPath()));
+                }
+                Message message = handler.obtainMessage();
+                message.what = 0;
+                handler.sendMessage(message);
+            }
+        }).start();*/
     }
+
 
     private void setMusicBackground() {
 
-    }
-
-    public Bitmap createAlbumArt(String filePath) {
-        Bitmap bitmap = null;
-        //能够获取多媒体文件元数据的类
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        try {
-            retriever.setDataSource(filePath); //设置数据源
-            byte[] art = retriever.getEmbeddedPicture(); //得到字节型数据
-            bitmap = BitmapFactory.decodeByteArray(art, 0, art.length); //转换为图片
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                retriever.release();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return bitmap;
     }
 
 
@@ -171,15 +148,22 @@ public class MainLeftFragment extends Fragment {
         private TextView titleView;
         private TextView albumView;
         private ImageView iconView;
+        private TextView artistView;
         public ListViewHolder(View itemView) {
             super(itemView);
             titleView = (TextView) itemView.findViewById(R.id.music_title);
             iconView = (ImageView) itemView.findViewById(R.id.music_icon);
+            albumView = (TextView) itemView.findViewById(R.id.music_album);
+            artistView = (TextView) itemView.findViewById(R.id.music_artist);
         }
 
         public void initView(final int position) {
-            final Music music = musics.get(position);
+            Music music = musics.get(position);
             titleView.setText(!TextUtils.isEmpty(music.getTitle()) ? music.getTitle() : music.getName());
+            albumView.setText(music.getAlbum());
+            artistView.setText(music.getArtist());
+
+
             Bitmap icon = music.getImage();
 
 //            backgroundView.setImageBitmap(background == null ?
@@ -189,6 +173,9 @@ public class MainLeftFragment extends Fragment {
             } else {
                 iconView.setImageResource(R.drawable.album_icon);
             }
+
+
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -197,6 +184,8 @@ public class MainLeftFragment extends Fragment {
                     }
                 }
             });
+
+
 /*            if (background != null) {
                 backgroundView.setImageBitmap(background);
                 music.setBackground(background);

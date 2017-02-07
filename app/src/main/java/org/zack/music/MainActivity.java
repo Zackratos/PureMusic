@@ -31,6 +31,7 @@ public class MainActivity extends BaseActivity {
     private PlayService.PlayBinder playBinder;
 
     private MainMiddleFragment mmFragment;
+    private MainLeftFragment mlFragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,6 +39,9 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         initService();
         initView();
+
+        bindService(PlayService.newIntent(this), connection, BIND_AUTO_CREATE);
+        startService(PlayService.newIntent(this));
     }
 
 
@@ -91,7 +95,7 @@ public class MainActivity extends BaseActivity {
         dl = (DrawerLayout) findViewById(R.id.main_drawer);
         FragmentManager fm = getSupportFragmentManager();
         mmFragment = MainMiddleFragment.newInstance();
-        MainLeftFragment mlFragment = MainLeftFragment.newInstance();
+        mlFragment = MainLeftFragment.newInstance();
         mmFragment.setMainMiddleListener(new MainMiddleFragment.MainMiddleListener() {
 
             @Override
@@ -120,9 +124,15 @@ public class MainActivity extends BaseActivity {
             }
 
             @Override
-            public void progressChange(int progress) {
-                playBinder.progressChange(progress);
+            public void onStartTrackingTouch() {
+                playBinder.onStartTrackingTouch();
             }
+
+            @Override
+            public void onStopTrackingTouch(int progress) {
+                playBinder.onStopTrackingTouch(progress);
+            }
+
         });
 
         mlFragment.setMainLeftListener(new MainLeftFragment.MainLeftListener() {
@@ -149,19 +159,9 @@ public class MainActivity extends BaseActivity {
         connection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-                Log.d("TAG", "onServiceConnected");
                 playBinder = (PlayService.PlayBinder) iBinder;
-                Music music = playBinder.getMusic();
-                if (music != null) {
-                    mmFragment.setDuration(music.getDuration());
-                    setTitle(TextUtils.isEmpty(music.getTitle()) ? music.getName() : music.getTitle());
-                    mmFragment.initPlayView(playBinder.isPlaying());
-                }
 
-
-                PlayService service = playBinder.getPlayService();
-
-                service.setCallBack(new PlayService.CallBack() {
+                playBinder.setCallBack(new PlayService.CallBack() {
                     @Override
                     public void onMusicChange(Music music) {
                         mmFragment.setDuration(music.getDuration());
@@ -175,17 +175,35 @@ public class MainActivity extends BaseActivity {
 
                     @Override
                     public void updateTime(int time) {
+                        Log.d("TAG", "updateTime");
                         mmFragment.updateTime(time);
                     }
+
+                    @Override
+                    public void setMusics(List<Music> musics) {
+                        mlFragment.setMusics(musics);
+                    }
                 });
+
+                List<Music> musics = playBinder.getMusicList();
+
+                if (musics == null) {
+                    playBinder.initMusicList();
+                } else {
+                    Music music = playBinder.getCurrentMusic();
+                    mmFragment.setDuration(music.getDuration());
+                    setTitle(TextUtils.isEmpty(music.getTitle()) ? music.getName() : music.getTitle());
+                    mmFragment.initPlayView(playBinder.isPlaying());
+                    mlFragment.setMusics(musics);
+                }
+
             }
 
             @Override
             public void onServiceDisconnected(ComponentName componentName) {
-
+                playBinder.setCallBack(null);
             }
         };
-        bindService(PlayService.newIntent(this), connection, BIND_AUTO_CREATE);
-        startService(PlayService.newIntent(this));
+
     }
 }

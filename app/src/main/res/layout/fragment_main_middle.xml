@@ -22,7 +22,6 @@
             android:layout_weight="1"
             android:clickable="true"
             android:background="?android:attr/selectableItemBackground"
-            android:tint="@color/halfTransparent"
             android:src="@drawable/replay_icon"/>
         <ImageView
             android:id="@+id/middle_previous"
@@ -55,7 +54,6 @@
             android:layout_weight="1"
             android:clickable="true"
             android:background="?android:attr/selectableItemBackground"
-            android:tint="@color/halfTransparent"
             android:src="@drawable/shuffle_icon"/>
     </LinearLayout>
 

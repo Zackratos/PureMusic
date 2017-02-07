@@ -11,10 +11,10 @@ import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
-import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
@@ -31,6 +31,7 @@ public class PlayService extends Service {
     private int current;
     private List<Music> musics;
     private boolean random;
+    private int cycle;
 
     private Handler handler;
     private Runnable runnable;
@@ -45,7 +46,6 @@ public class PlayService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d("TAG", "onBind");
         PlayBinder playBinder = new PlayBinder();
 
         return playBinder;
@@ -53,15 +53,11 @@ public class PlayService extends Service {
 
     @Override
     public void onCreate() {
-        Log.d("TAG", "onCreate");
+
         super.onCreate();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                musics = getMusicList();
-            }
-        }).start();
         current = PreferenceUtil.getCurrent(this);
+        random = PreferenceUtil.isRandom(this);
+        cycle = PreferenceUtil.getCycle(this);
 
         mp = new MediaPlayer();
         mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -70,13 +66,12 @@ public class PlayService extends Service {
             public void onCompletion(MediaPlayer mp) {
                 if (musics != null && current < musics.size() -1) {
                     setDataSource(musics.get(++current));
-//                    mp.start();
                     startPlay();
                 }
             }
         });
 
-        new AsyncTask<Void, Void, Boolean>() {
+/*        new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... voids) {
                 musics = getMusicList();
@@ -90,8 +85,10 @@ public class PlayService extends Service {
                 }
 
             }
-        }.execute();
-
+        }.execute();*/
+/*        musics = getMusicList();
+        if (musics.size() > 0)
+        setDataSource(musics.get(current));*/
 
 
 
@@ -108,9 +105,10 @@ public class PlayService extends Service {
         runnable = new Runnable() {
             @Override
             public void run() {
-                Log.d("TAG", "updateTime");
-                callBack.updateTime(mp.getCurrentPosition());
-                handler.postDelayed(this, 1000);
+                if (callBack != null) {
+                    callBack.updateTime(mp.getCurrentPosition());
+                    handler.postDelayed(this, 500);
+                }
             }
         };
     }
@@ -124,11 +122,13 @@ public class PlayService extends Service {
             mp = null;
         }
         PreferenceUtil.putCurrent(this, current);
+        PreferenceUtil.putRandom(this, random);
+        PreferenceUtil.putCycle(this, cycle);
         handler.removeCallbacks(runnable);
     }
 
 
-    private List<Music> getMusicList() {
+/*    private List<Music> getMusicList() {
         ContentResolver cr = getContentResolver();
         Cursor cursor = cr.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 null, null, null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
@@ -155,7 +155,7 @@ public class PlayService extends Service {
             e.printStackTrace();
         }
         return musics;
-    }
+    }*/
 
 
     private Bitmap createAlbumArt(String filePath) {
@@ -216,9 +216,6 @@ public class PlayService extends Service {
 
     class PlayBinder extends Binder {
 
-//        private boolean isPause;
-
-
         public PlayService getPlayService() {
             return PlayService.this;
         }
@@ -228,7 +225,7 @@ public class PlayService extends Service {
         }
 
         public void clickPlay() {
-            if (musics.size() > 0) {
+            if (musics != null && musics.size() > current) {
                 if (mp.isPlaying()) {
                     pausePlay();
                 } else {
@@ -239,68 +236,117 @@ public class PlayService extends Service {
 
         public void clickNext() {
             boolean isPlaying = mp.isPlaying();
-            if (current < musics.size() - 1) {
+            if (musics != null && current < musics.size() - 1) {
                 setDataSource(musics.get(++current));
             }
             if (isPlaying) {
-//                mp.start();
                 startPlay();
             }
         }
 
         public void clickPrevious() {
             boolean isPlaying = mp.isPlaying();
-            if (current > 0) {
+            if (musics != null && current > 0) {
                 setDataSource(musics.get(--current));
             }
             if (isPlaying) {
-//                mp.start();
                 startPlay();
             }
         }
 
         public void clickRandom() {
-
+            random = !random;
         }
 
         public void clickCycle() {
 
         }
 
-        public void progressChange(int progress) {
-            mp.seekTo(progress * 1000);
+        public void onStartTrackingTouch() {
+            if (musics != null && musics.size() > current) {
+                handler.removeCallbacks(runnable);
+            }
+        }
+
+        public void onStopTrackingTouch(int progress) {
+            if (musics != null && musics.size() > current) {
+                mp.seekTo(progress * 1000);
+                if (mp.isPlaying()) {
+                    handler.post(runnable);
+                }
+            }
         }
 
         public void clickPosition(int position) {
-            if (musics != null && musics.size() > 0) {
+            if (musics != null && musics.size() > position) {
                 boolean isPlaying = mp.isPlaying();
                 setDataSource(musics.get(position));
                 current = position;
                 if (isPlaying) {
-//                    mp.start();
                     startPlay();
                 }
             }
         }
 
-        public Music getMusic() {
-            if (musics != null && musics.size() > 0) {
+
+        public void initMusicList() {
+
+            final Handler handler = new Handler(new Handler.Callback() {
+                @Override
+                public boolean handleMessage(Message msg) {
+                    if (msg.what == 0 && musics != null && musics.size() > current) {
+                        setDataSource(musics.get(current));
+                        if (callBack != null) {
+                            callBack.setMusics(musics);
+                        }
+                    }
+                    return false;
+                }
+            });
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    if (musics == null) {
+                        musics = Music.getMusicList(PlayService.this);
+                        Message msg = new Message();
+                        msg.what = 0;
+                        handler.sendMessage(msg);
+                    }
+                }
+            }).start();
+        }
+
+        public Music getCurrentMusic() {
+            if (musics != null && musics.size() > current) {
                 return musics.get(current);
             }
             return null;
         }
 
+        public List<Music> getMusicList() {
+            return musics;
+        }
+
+        public void setCallBack(CallBack callBack) {
+            PlayService.this.callBack = callBack;
+        }
+
+        public CallBack getCallBack() {
+            return PlayService.this.callBack;
+        }
     }
 
+
     public interface CallBack {
-//        void setDuration(long duration);
         void onMusicChange(Music music);
         void initPlayView(boolean isPlaying);
         void updateTime(int time);
+        void setMusics(List<Music> musics);
     }
 
-    public void setCallBack(CallBack callBack) {
+/*    public void setCallBack(CallBack callBack) {
         this.callBack = callBack;
-    }
+    }*/
 
 }

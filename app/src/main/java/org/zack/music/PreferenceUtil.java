@@ -30,19 +30,19 @@ public class PreferenceUtil {
     }
 
 
-    public static boolean isRandomPlay(Context context) {
+    public static boolean isRandom(Context context) {
         return getPreferences(context).getBoolean("randomPlay", false);
     }
 
-    public static void putRandomPlay(Context context, boolean randomPlay) {
+    public static void putRandom(Context context, boolean randomPlay) {
         getEditor(context).putBoolean("randomPlay", randomPlay);
     }
 
-    public static int getCyclePlay(Context context) {
+    public static int getCycle(Context context) {
         return getPreferences(context).getInt("cyclePlay", NO_CYCLE);
     }
 
-    public static void putCyclePlay(Context context, int cyclePlay) {
+    public static void putCycle(Context context, int cyclePlay) {
         getEditor(context).putInt("cyclePlay", cyclePlay);
     }
 }

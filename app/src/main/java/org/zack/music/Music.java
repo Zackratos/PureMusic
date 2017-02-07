@@ -1,6 +1,15 @@
 package org.zack.music;
 
+import android.content.ContentResolver;
+import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
+import android.provider.MediaStore;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Administrator on 2017/1/2.
@@ -80,6 +89,59 @@ public class Music {
     public void setName(String name) {
         this.name = name;
     }
+
+
+    public static Bitmap createAlbumArt(String filePath) {
+        Bitmap bitmap = null;
+        //能够获取多媒体文件元数据的类
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        try {
+            retriever.setDataSource(filePath); //设置数据源
+            byte[] art = retriever.getEmbeddedPicture(); //得到字节型数据
+            bitmap = BitmapFactory.decodeByteArray(art, 0, art.length); //转换为图片
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                retriever.release();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return bitmap;
+    }
+
+    public static List<Music> getMusicList(Context context) {
+        ContentResolver cr = context.getContentResolver();
+        Cursor cursor = cr.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                null, null, null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
+        List<Music> musics = new ArrayList<>();
+        try {
+            if (cursor.moveToFirst()) {
+                while (cursor.moveToNext()) {
+                    String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
+                    String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
+                    String path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
+                    String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
+                    String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
+                    long duration = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
+                    Music music = new Music.MusicBuilder()
+                            .title(title)
+                            .album(album)
+                            .path(path)
+                            .name(name)
+                            .artist(artist)
+                            .duration(duration)
+                            .builder();
+                    musics.add(music);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return musics;
+    }
+
 
 
     public static class MusicBuilder {

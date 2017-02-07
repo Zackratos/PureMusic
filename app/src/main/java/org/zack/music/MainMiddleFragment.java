@@ -31,11 +31,6 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
 
     private MainMiddleListener listener;
 
-    //    private boolean playing;
-//    private int current;
-    private int position = 0;
-    private boolean random;
-    private int cycle;
 
     private ImageView playView;
     private ImageView previousView;
@@ -57,14 +52,12 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cycle = PreferenceUtil.getCyclePlay(getActivity());
-        random = PreferenceUtil.isRandomPlay(getActivity());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         return initView(inflater, container);
     }
 
@@ -80,7 +73,6 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
             case R.id.middle_play:
                 if (listener != null) {
                     listener.clickPlay();
-//                    playView.setImageResource(listener.isPlaying() ? R.drawable.pause_icon : R.drawable.play_icon);
                 }
                 break;
 
@@ -115,7 +107,7 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
         bottomDurationView = (TextView) view.findViewById(R.id.middle_bottom_duration);
         currentView = (TextView) view.findViewById(R.id.middle_current_time);
         bottomCurrentView = (TextView) view.findViewById(R.id.middle_bottom_current_time);
-//        durationView.setText(getDurationText(listener.getDuration()));
+
         playView.setOnClickListener(this);
         previousView.setOnClickListener(this);
         nextView.setOnClickListener(this);
@@ -134,12 +126,12 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
 
             @Override
             public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
-
+                listener.onStartTrackingTouch();
             }
 
             @Override
             public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
-                listener.progressChange(seekBar.getProgress());
+                listener.onStopTrackingTouch(seekBar.getProgress());
             }
         });
 
@@ -156,12 +148,12 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
 
             @Override
             public void onStopTrackingTouch(CircularSeekBar seekBar) {
-                listener.progressChange(seekBar.getProgress());
+                listener.onStopTrackingTouch(seekBar.getProgress());
             }
 
             @Override
             public void onStartTrackingTouch(CircularSeekBar seekBar) {
-
+                listener.onStartTrackingTouch();
             }
         });
 
@@ -170,6 +162,7 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
     }
 
     interface MainMiddleListener {
+
         void clickPlay();
 
         void clickNext();
@@ -180,9 +173,10 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
 
         void clickCycle();
 
-        void progressChange(int progress);
+        void onStartTrackingTouch();
 
-//        long getDuration(int position);
+        void onStopTrackingTouch(int progress);
+
     }
 
     public void setMainMiddleListener(MainMiddleListener listener) {
@@ -226,15 +220,15 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
     }
 
 
+
     private int getDurationSecond(long duration) {
         return Math.round(duration / 1000);
     }
 
-    private String getDurationText(int duration) {
+    private String getDurationText(int durationSecond) {
 
-//        int secondCount = getDurationSecond(duration);
-        long minute = duration / 60;
-        long second = duration % 60;
+        long minute = durationSecond / 60;
+        long second = durationSecond % 60;
         String minuteText;
         String secondText;
         if (minute < 10) {
