@@ -45,4 +45,12 @@ public class PreferenceUtil {
     public static void putCycle(Context context, int cycle) {
         getEditor(context).putInt("cycle", cycle).apply();
     }
+
+    public static boolean isTranBackground(Context context) {
+        return getPreferences(context).getBoolean("tranBackground", false);
+    }
+
+    public static void setTranBackground(Context context, boolean tranBackground) {
+        getEditor(context).putBoolean("tranBackground", tranBackground).apply();
+    }
 }

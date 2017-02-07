@@ -20,7 +20,7 @@ import android.widget.Switch;
 public class SetupFragment extends Fragment implements View.OnClickListener {
 
 
-    private View tranWhole, grilWhole, innWhole;
+    private View tranWhole, girlWhole, innWhole;
     private SwitchCompat tranSwitch, girlSwitch, innSwitch;
 
     public SetupFragment() {
@@ -68,7 +68,7 @@ public class SetupFragment extends Fragment implements View.OnClickListener {
         parentActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         tranWhole = view.findViewById(R.id.transParent_background_whole);
-        grilWhole = view.findViewById(R.id.girl_background_whole);
+        girlWhole = view.findViewById(R.id.girl_background_whole);
         innWhole = view.findViewById(R.id.inn_background_whole);
 
         tranSwitch = (SwitchCompat) view.findViewById(R.id.transParent_switch);
@@ -76,7 +76,7 @@ public class SetupFragment extends Fragment implements View.OnClickListener {
         innSwitch = (SwitchCompat) view.findViewById(R.id.inn_switch);
 
         tranWhole.setOnClickListener(this);
-        grilWhole.setOnClickListener(this);
+        girlWhole.setOnClickListener(this);
         innWhole.setOnClickListener(this);
     }
 
@@ -95,5 +95,18 @@ public class SetupFragment extends Fragment implements View.OnClickListener {
             default:
                 break;
         }
+    }
+
+
+    private void initTranSwitch() {
+
+    }
+
+    private void initGirlSwitch() {
+
+    }
+
+    private void initInnSwitch() {
+
     }
 }
