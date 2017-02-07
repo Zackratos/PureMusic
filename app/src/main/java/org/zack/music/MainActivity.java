@@ -3,9 +3,12 @@ package org.zack.music;
 import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -32,6 +35,8 @@ public class MainActivity extends BaseActivity {
 
     private MainMiddleFragment mmFragment;
     private MainLeftFragment mlFragment;
+
+    private ImageView backgroundView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,13 +86,13 @@ public class MainActivity extends BaseActivity {
 
     private void initView() {
         FrameLayout decorView = (FrameLayout) getWindow().getDecorView();
-        ImageView backgroundView = new ImageView(this);
-        backgroundView.setImageResource(R.drawable.background_1);
+        backgroundView = new ImageView(this);
+//        backgroundView.setImageResource(R.drawable.background_1);
         DrawerLayout.LayoutParams params = new DrawerLayout.LayoutParams
                 (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         backgroundView.setLayoutParams(params);
         backgroundView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//        decorView.addView(backgroundView, 0);
+        decorView.addView(backgroundView, 0);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar).findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -154,6 +159,27 @@ public class MainActivity extends BaseActivity {
         abdt.syncState();
     }
 
+    private void setBackground(final String path) {
+        final Handler handler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message message) {
+                backgroundView.setImageBitmap((Bitmap)message.obj);
+                return false;
+            }
+        });
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap bitmap = Music.createAlbumArt(path);
+                Message msg = handler.obtainMessage();
+                msg.obj = bitmap;
+                handler.sendMessage(msg);
+            }
+        }).start();
+
+    }
+
 
     private void initService() {
         connection = new ServiceConnection() {
@@ -166,11 +192,22 @@ public class MainActivity extends BaseActivity {
                     public void onMusicChange(Music music) {
                         mmFragment.setDuration(music.getDuration());
                         setTitle(TextUtils.isEmpty(music.getTitle()) ? music.getName() : music.getTitle());
+                        setBackground(music.getPath());
                     }
 
                     @Override
                     public void initPlayView(boolean isPlaying) {
                         mmFragment.initPlayView(isPlaying);
+                    }
+
+                    @Override
+                    public void initCycleView(int cycle) {
+                        mmFragment.initCycleView(cycle);
+                    }
+
+                    @Override
+                    public void initRandomView(boolean random) {
+                        mmFragment.initRandomView(random);
                     }
 
                     @Override
@@ -189,11 +226,16 @@ public class MainActivity extends BaseActivity {
 
                 if (musics == null) {
                     playBinder.initMusicList();
+                    mmFragment.initRandomView(playBinder.isRandom());
+                    mmFragment.initCycleView(playBinder.getCycle());
                 } else {
                     Music music = playBinder.getCurrentMusic();
                     mmFragment.setDuration(music.getDuration());
                     setTitle(TextUtils.isEmpty(music.getTitle()) ? music.getName() : music.getTitle());
+                    setBackground(music.getPath());
                     mmFragment.initPlayView(playBinder.isPlaying());
+                    mmFragment.initRandomView(playBinder.isRandom());
+                    mmFragment.initCycleView(playBinder.getCycle());
                     mlFragment.setMusics(musics);
                 }
 

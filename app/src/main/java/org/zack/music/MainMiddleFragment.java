@@ -35,6 +35,7 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
     private ImageView playView;
     private ImageView previousView;
     private ImageView nextView;
+    private ImageView cycleView, randomView;
     private TextView durationView, bottomDurationView;
     private TextView currentView, bottomCurrentView;
 
@@ -88,6 +89,17 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
                 }
                 break;
 
+            case R.id.middle_cycle:
+                if (listener != null) {
+                    listener.clickCycle();
+                }
+                break;
+
+            case R.id.middle_random:
+                if (listener != null) {
+                    listener.clickRandom();
+                }
+                break;
             default:
                 break;
         }
@@ -103,6 +115,8 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
         playView = (ImageView) view.findViewById(R.id.middle_play);
         previousView = (ImageView) view.findViewById(R.id.middle_previous);
         nextView = (ImageView) view.findViewById(R.id.middle_next);
+        cycleView = (ImageView) view.findViewById(R.id.middle_cycle);
+        randomView = (ImageView) view.findViewById(R.id.middle_random);
         durationView = (TextView) view.findViewById(R.id.middle_duration);
         bottomDurationView = (TextView) view.findViewById(R.id.middle_bottom_duration);
         currentView = (TextView) view.findViewById(R.id.middle_current_time);
@@ -111,6 +125,9 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
         playView.setOnClickListener(this);
         previousView.setOnClickListener(this);
         nextView.setOnClickListener(this);
+        cycleView.setOnClickListener(this);
+        randomView.setOnClickListener(this);
+
         lineSeekBar = (DiscreteSeekBar) view.findViewById(R.id.middle_line_seekBar);
         circleSeekBar = (CircularSeekBar) view.findViewById(R.id.middle_circle_seekBar);
         lineSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
@@ -208,6 +225,20 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
         } else {
             playView.setImageResource(R.drawable.play_icon);
         }
+    }
+
+    public void initCycleView(int cycle) {
+        if (cycle == PreferenceUtil.NO_CYCLE) {
+            cycleView.setImageResource(R.drawable.cycle_icon_off);
+        } else if (cycle == PreferenceUtil.ALL_CYCLE) {
+            cycleView.setImageResource(R.drawable.cycle_icon_on);
+        } else {
+            cycleView.setImageResource(R.drawable.cycle_icon_single);
+        }
+    }
+
+    public void initRandomView(boolean random) {
+        randomView.setImageResource(random ? R.drawable.random_icon_on : R.drawable.random_icon_off);
     }
 
     public void updateTime(int time) {

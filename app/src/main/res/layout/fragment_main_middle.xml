@@ -22,7 +22,7 @@
             android:layout_weight="1"
             android:clickable="true"
             android:background="?android:attr/selectableItemBackground"
-            android:src="@drawable/replay_icon"/>
+            android:src="@drawable/cycle_icon_off"/>
         <ImageView
             android:id="@+id/middle_previous"
             android:layout_width="wrap_content"
@@ -48,13 +48,13 @@
             android:background="?android:attr/selectableItemBackground"
             android:src="@drawable/next_icon"/>
         <ImageView
-            android:id="@+id/middle_shuffle"
+            android:id="@+id/middle_random"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:clickable="true"
             android:background="?android:attr/selectableItemBackground"
-            android:src="@drawable/shuffle_icon"/>
+            android:src="@drawable/random_icon_off"/>
     </LinearLayout>
 
 <!--    <View

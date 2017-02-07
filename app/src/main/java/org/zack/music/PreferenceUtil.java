@@ -11,7 +11,7 @@ public class PreferenceUtil {
 
     public static final int NO_CYCLE = 0;
     public static final int ALL_CYCLE = 1;
-    public static final int SINGER_CYCLE = 2;
+    public static final int SINGLE_CYCLE = 2;
 
     private static SharedPreferences getPreferences(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
@@ -31,18 +31,18 @@ public class PreferenceUtil {
 
 
     public static boolean isRandom(Context context) {
-        return getPreferences(context).getBoolean("randomPlay", false);
+        return getPreferences(context).getBoolean("random", false);
     }
 
-    public static void putRandom(Context context, boolean randomPlay) {
-        getEditor(context).putBoolean("randomPlay", randomPlay);
+    public static void putRandom(Context context, boolean random) {
+        getEditor(context).putBoolean("random", random).apply();
     }
 
     public static int getCycle(Context context) {
-        return getPreferences(context).getInt("cyclePlay", NO_CYCLE);
+        return getPreferences(context).getInt("cycle", NO_CYCLE);
     }
 
-    public static void putCycle(Context context, int cyclePlay) {
-        getEditor(context).putInt("cyclePlay", cyclePlay);
+    public static void putCycle(Context context, int cycle) {
+        getEditor(context).putInt("cycle", cycle).apply();
     }
 }

@@ -22,6 +22,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class PlayService extends Service {
 
@@ -29,6 +30,7 @@ public class PlayService extends Service {
 
     private MediaPlayer mp;
     private int current;
+    private int last;
     private List<Music> musics;
     private boolean random;
     private int cycle;
@@ -64,8 +66,17 @@ public class PlayService extends Service {
         mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                if (musics != null && current < musics.size() -1) {
-                    setDataSource(musics.get(++current));
+                if (musics != null && current < musics.size()) {
+//                    setDataSource(musics.get(++current));
+                    if (cycle == PreferenceUtil.SINGLE_CYCLE) {
+                        setDataSource(musics.get(current));
+                    } else {
+                        if (random) {
+                            setRandom();
+                        } else {
+                            setNext();
+                        }
+                    }
                     startPlay();
                 }
             }
@@ -96,7 +107,7 @@ public class PlayService extends Service {
                 .setContentTitle("sjlf")
                 .setContentText("sjldfkj")
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.notification_icon)
                 .build();
 
         startForeground(1, notification);
@@ -158,26 +169,6 @@ public class PlayService extends Service {
     }*/
 
 
-    private Bitmap createAlbumArt(String filePath) {
-        Bitmap bitmap = null;
-        //能够获取多媒体文件元数据的类
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        try {
-            retriever.setDataSource(filePath); //设置数据源
-            byte[] art = retriever.getEmbeddedPicture(); //得到字节型数据
-            bitmap = BitmapFactory.decodeByteArray(art, 0, art.length); //转换为图片
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                retriever.release();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return bitmap;
-    }
-
 
     private void setDataSource(Music music) {
         if (callBack != null) {
@@ -197,9 +188,7 @@ public class PlayService extends Service {
 
     private void startPlay() {
         mp.start();
-        if (callBack != null) {
-            callBack.initPlayView(true);
-        }
+
 
         handler.removeCallbacks(runnable);
         handler.post(runnable);
@@ -207,10 +196,28 @@ public class PlayService extends Service {
 
     private void pausePlay() {
         mp.pause();
-        if (callBack != null) {
-            callBack.initPlayView(false);
-        }
+
         handler.removeCallbacks(runnable);
+    }
+
+    private void setNext() {
+        if (cycle == PreferenceUtil.ALL_CYCLE) {
+            if (musics.size() - 1 > current) {
+                current++;
+            } else {
+                current = 0;
+            }
+            setDataSource(musics.get(current));
+        } else {
+            if (musics.size() - 1 > current) {
+                setDataSource(musics.get(++current));
+            }
+        }
+    }
+
+    private void setRandom() {
+        current = new Random().nextInt(musics.size() - 1);
+        setDataSource(musics.get(current));
     }
 
 
@@ -224,6 +231,14 @@ public class PlayService extends Service {
             return mp.isPlaying();
         }
 
+        public boolean isRandom() {
+            return random;
+        }
+
+        public int getCycle() {
+            return cycle;
+        }
+
         public void clickPlay() {
             if (musics != null && musics.size() > current) {
                 if (mp.isPlaying()) {
@@ -232,12 +247,20 @@ public class PlayService extends Service {
                     startPlay();
                 }
             }
+
+            if (callBack != null) {
+                callBack.initPlayView(mp.isPlaying());
+            }
         }
 
         public void clickNext() {
             boolean isPlaying = mp.isPlaying();
-            if (musics != null && current < musics.size() - 1) {
-                setDataSource(musics.get(++current));
+            if (musics != null && musics.size() > current) {
+                if (random) {
+                    setRandom();
+                } else {
+                    setNext();
+                }
             }
             if (isPlaying) {
                 startPlay();
@@ -246,8 +269,24 @@ public class PlayService extends Service {
 
         public void clickPrevious() {
             boolean isPlaying = mp.isPlaying();
-            if (musics != null && current > 0) {
-                setDataSource(musics.get(--current));
+            if (musics != null && musics.size() > current) {
+//                setDataSource(musics.get(--current));
+                if (random) {
+                    setRandom();
+                } else {
+                    if (cycle == PreferenceUtil.ALL_CYCLE) {
+                        if (current > 0) {
+                            current--;
+                        } else {
+                            current = musics.size() - 1;
+                        }
+                        setDataSource(musics.get(current));
+                    } else {
+                        if (current > 0) {
+                            setDataSource(musics.get(--current));
+                        }
+                    }
+                }
             }
             if (isPlaying) {
                 startPlay();
@@ -256,10 +295,23 @@ public class PlayService extends Service {
 
         public void clickRandom() {
             random = !random;
+            if (callBack != null) {
+                callBack.initRandomView(random);
+            }
         }
 
         public void clickCycle() {
+            if (cycle == PreferenceUtil.NO_CYCLE) {
+                cycle = PreferenceUtil.ALL_CYCLE;
+            } else if (cycle == PreferenceUtil.ALL_CYCLE) {
+                cycle = PreferenceUtil.SINGLE_CYCLE;
+            } else {
+                cycle = PreferenceUtil.NO_CYCLE;
+            }
 
+            if (callBack != null) {
+                callBack.initCycleView(cycle);
+            }
         }
 
         public void onStartTrackingTouch() {
@@ -280,8 +332,8 @@ public class PlayService extends Service {
         public void clickPosition(int position) {
             if (musics != null && musics.size() > position) {
                 boolean isPlaying = mp.isPlaying();
-                setDataSource(musics.get(position));
                 current = position;
+                setDataSource(musics.get(current));
                 if (isPlaying) {
                     startPlay();
                 }
@@ -341,6 +393,8 @@ public class PlayService extends Service {
     public interface CallBack {
         void onMusicChange(Music music);
         void initPlayView(boolean isPlaying);
+        void initCycleView(int cycle);
+        void initRandomView(boolean random);
         void updateTime(int time);
         void setMusics(List<Music> musics);
     }
