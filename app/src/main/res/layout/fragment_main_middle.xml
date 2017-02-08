@@ -153,7 +153,7 @@
             app:pointer_halo_color_ontouch="#22FFFFFF"/>
 
 
-        <LinearLayout
+<!--        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -173,7 +173,7 @@
                 android:text="01:40"
                 android:textSize="60dp"
                 android:textColor="@android:color/white"/>
-        </LinearLayout>
+        </LinearLayout>-->
 
 
         <org.zack.music.LyricView

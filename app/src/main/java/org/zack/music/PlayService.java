@@ -36,6 +36,7 @@ public class PlayService extends Service {
     private boolean random;
     private int cycle;
     private int background;
+    private boolean showLyric;
 
     private Handler handler;
     private Runnable runnable;
@@ -63,6 +64,7 @@ public class PlayService extends Service {
         random = PreferenceUtil.isRandom(this);
         cycle = PreferenceUtil.getCycle(this);
         background = PreferenceUtil.getBackground(this);
+        showLyric = PreferenceUtil.getShowLyric(this);
 
         mp = new MediaPlayer();
         mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -139,6 +141,7 @@ public class PlayService extends Service {
         PreferenceUtil.putRandom(this, random);
         PreferenceUtil.putCycle(this, cycle);
         PreferenceUtil.putBackground(this, background);
+        PreferenceUtil.putShowLyric(this, showLyric);
         handler.removeCallbacks(runnable);
     }
 
@@ -190,7 +193,7 @@ public class PlayService extends Service {
     }
 
     private void setRandom() {
-        current = new Random().nextInt(musics.size() - 1);
+        current = new Random().nextInt(musics.size());
         setDataSource(musics.get(current));
     }
 
@@ -211,6 +214,10 @@ public class PlayService extends Service {
 
         public int getCycle() {
             return cycle;
+        }
+
+        public boolean getShowLyric() {
+            return showLyric;
         }
 
         public void clickPlay() {
@@ -285,6 +292,13 @@ public class PlayService extends Service {
 
             if (mainCallBack != null) {
                 mainCallBack.initCycleView(cycle);
+            }
+        }
+
+        public void clickLyric() {
+            showLyric = !showLyric;
+            if (mainCallBack != null) {
+                mainCallBack.initShowLyric(showLyric);
             }
         }
 
@@ -371,6 +385,10 @@ public class PlayService extends Service {
             if (setupCallBack != null) {
                 setupCallBack.onBackgroundChange(PlayService.this.background);
             }
+            if (mainCallBack != null) {
+                mainCallBack.onBackgroundTypeChange(PlayService.this.background);
+            }
+
         }
 
         public void setSetupCallBack(SetupCallBack setupCallBack) {
@@ -384,8 +402,10 @@ public class PlayService extends Service {
         void initPlayView(boolean isPlaying);
         void initCycleView(int cycle);
         void initRandomView(boolean random);
+        void initShowLyric(boolean showLyric);
         void updateTime(int time);
         void setMusics(List<Music> musics);
+        void onBackgroundTypeChange(int background);
     }
 
     public interface SetupCallBack {

@@ -88,9 +88,7 @@ public class SetupFragment extends Fragment implements View.OnClickListener, Com
         girlWhole.setOnClickListener(this);
         innWhole.setOnClickListener(this);
 
-        tranSwitch.setOnCheckedChangeListener(this);
-        girlSwitch.setOnCheckedChangeListener(this);
-        innSwitch.setOnCheckedChangeListener(this);
+
 
     }
 
@@ -155,6 +153,10 @@ public class SetupFragment extends Fragment implements View.OnClickListener, Com
                         initBackgroundSwitch();
                     }
                 });
+
+                tranSwitch.setOnCheckedChangeListener(SetupFragment.this);
+                girlSwitch.setOnCheckedChangeListener(SetupFragment.this);
+                innSwitch.setOnCheckedChangeListener(SetupFragment.this);
             }
 
             @Override

@@ -19,14 +19,6 @@ import java.io.File;
 import java.util.List;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link MainMiddleFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link MainMiddleFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class MainMiddleFragment extends Fragment implements View.OnClickListener, View.OnLongClickListener {
 
 
@@ -37,9 +29,10 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
     private ImageView previousView;
     private ImageView nextView;
     private ImageView cycleView, randomView;
-    private TextView durationView, bottomDurationView;
-    private TextView currentView, bottomCurrentView;
+    private TextView bottomDurationView;
+    private TextView bottomCurrentView;
     private LyricView lyricView;
+    private View bottomScheduleWhole;
 
     private DiscreteSeekBar lineSeekBar;
     private CircularSeekBar circleSeekBar;
@@ -119,12 +112,12 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
         nextView = (ImageView) view.findViewById(R.id.middle_next);
         cycleView = (ImageView) view.findViewById(R.id.middle_cycle);
         randomView = (ImageView) view.findViewById(R.id.middle_random);
-        durationView = (TextView) view.findViewById(R.id.middle_duration);
+//        durationView = (TextView) view.findViewById(R.id.middle_duration);
         bottomDurationView = (TextView) view.findViewById(R.id.middle_bottom_duration);
-        currentView = (TextView) view.findViewById(R.id.middle_current_time);
+//        currentView = (TextView) view.findViewById(R.id.middle_current_time);
         bottomCurrentView = (TextView) view.findViewById(R.id.middle_bottom_current_time);
         lyricView = (LyricView) view.findViewById(R.id.middle_lyric);
-
+        bottomScheduleWhole = view.findViewById(R.id.middle_bottom_schedule_whole);
 
         playView.setOnClickListener(this);
         previousView.setOnClickListener(this);
@@ -140,7 +133,7 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
                 if (fromUser) {
                     circleSeekBar.setProgress(value);
                     String durationText = getDurationText(value);
-                    currentView.setText(durationText);
+//                    currentView.setText(durationText);
                     bottomCurrentView.setText(durationText);
                 }
             }
@@ -162,7 +155,7 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
                 if (fromUser) {
                     lineSeekBar.setProgress(progress);
                     String durationText = getDurationText(progress);
-                    currentView.setText(durationText);
+//                    currentView.setText(durationText);
                     bottomCurrentView.setText(durationText);
                 }
             }
@@ -209,7 +202,7 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
         int durationSecond = getDurationSecond(duration);
         String durationText = getDurationText(durationSecond);
 
-        durationView.setText(durationText);
+//        durationView.setText(durationText);
         bottomDurationView.setText(durationText);
 
         lineSeekBar.setMax(durationSecond);
@@ -218,7 +211,7 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
         lineSeekBar.setProgress(0);
         circleSeekBar.setProgress(0);
 
-        currentView.setText("00:00");
+//        currentView.setText("00:00");
         bottomCurrentView.setText("00:00");
     }
 
@@ -253,10 +246,22 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
         }
     }
 
+    public void initShowLyric(boolean showLyric) {
+        if (showLyric) {
+            lyricView.setVisibility(View.VISIBLE);
+            bottomScheduleWhole.setVisibility(View.VISIBLE);
+            circleSeekBar.setVisibility(View.GONE);
+        } else {
+            circleSeekBar.setVisibility(View.VISIBLE);
+            lyricView.setVisibility(View.GONE);
+            bottomScheduleWhole.setVisibility(View.GONE);
+        }
+    }
+
     public void updateTime(int time) {
         int durationSecond = getDurationSecond(time);
         String durationText = getDurationText(durationSecond);
-        currentView.setText(durationText);
+//        currentView.setText(durationText);
         bottomCurrentView.setText(durationText);
         lineSeekBar.setProgress(durationSecond);
         circleSeekBar.setProgress(durationSecond);

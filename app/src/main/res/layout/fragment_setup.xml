@@ -43,7 +43,6 @@
         android:orientation="horizontal"
         android:clickable="true"
         android:background="?android:attr/selectableItemBackground"
-        android:layout_marginTop="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:gravity="center_vertical">
@@ -51,7 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:text="精选美女图片作背景"
+            android:text="妹子图片作背景"
             android:textSize="18dp"
             android:textColor="@color/white"/>
         <android.support.v7.widget.SwitchCompat
@@ -69,7 +68,6 @@
         android:orientation="horizontal"
         android:clickable="true"
         android:background="?android:attr/selectableItemBackground"
-        android:layout_marginTop="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:gravity="center_vertical">

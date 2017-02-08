@@ -26,6 +26,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import java.util.List;
+import java.util.Random;
 
 public class MainActivity extends BaseActivity {
 
@@ -55,6 +56,7 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         lyricItem = menu.findItem(R.id.menu_lyric);
+        initLyricItem(playBinder.getShowLyric());
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -69,7 +71,7 @@ public class MainActivity extends BaseActivity {
         if (item.getItemId() == R.id.menu_setup) {
             startActivity(SetupActivity.newIntent(this));
         } else if (item.getItemId() == R.id.menu_lyric) {
-
+            playBinder.clickLyric();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -170,7 +172,7 @@ public class MainActivity extends BaseActivity {
         abdt.syncState();
     }
 
-    private void setBackground(final String path) {
+    private void setBackgroundInn(final String path) {
         final Handler handler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message message) {
@@ -191,6 +193,64 @@ public class MainActivity extends BaseActivity {
 
     }
 
+    private void setBackgroundGirl(int random) {
+        switch (random) {
+            case 0:
+                backgroundView.setImageResource(R.drawable.background_0);
+                break;
+            case 1:
+                backgroundView.setImageResource(R.drawable.background_1);
+                break;
+            case 2:
+                backgroundView.setImageResource(R.drawable.background_2);
+                break;
+            case 3:
+                backgroundView.setImageResource(R.drawable.background_3);
+                break;
+            case 4:
+                backgroundView.setImageResource(R.drawable.background_4);
+                break;
+            case 5:
+                backgroundView.setImageResource(R.drawable.background_5);
+                break;
+            case 6:
+                backgroundView.setImageResource(R.drawable.background_6);
+                break;
+            case 7:
+                backgroundView.setImageResource(R.drawable.background_7);
+                break;
+            case 8:
+                backgroundView.setImageResource(R.drawable.background_8);
+                break;
+            case 9:
+                backgroundView.setImageResource(R.drawable.background_9);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void setBackgroundTran() {
+        backgroundView.setImageDrawable(null);
+    }
+
+
+    private void setBackground(int background, String path) {
+        if (background == PreferenceUtil.TRAN_BACKGROUND) {
+            setBackgroundTran();
+        } else if (background == PreferenceUtil.GIRL_BACKGROUND) {
+            setBackgroundGirl(new Random().nextInt(10));
+        } else {
+            setBackgroundInn(path);
+        }
+    }
+
+    private void initLyricItem(boolean showLyric) {
+        if (lyricItem !=  null) {
+            lyricItem.setIcon(showLyric ? R.drawable.lyric_icon_on : R.drawable.lyric_icon_off);
+        }
+    }
+
 
     private void initService() {
         connection = new ServiceConnection() {
@@ -203,11 +263,9 @@ public class MainActivity extends BaseActivity {
                     public void onMusicChange(Music music) {
                         mmFragment.setDuration(music.getDuration());
                         setTitle(TextUtils.isEmpty(music.getTitle()) ? music.getName() : music.getTitle());
-                        setBackground(music.getPath());
+                        setBackground(playBinder.getBackground(), music.getPath());
                         mmFragment.initLyricView(music.getPath().replace(".mp3", ".lrc").replace(".wma", ".lrc"));
-//                        Log.d("TAG", music.getPath());
-//                        Log.d("TAG", music.getName());
-//                        mmFragment.initLyricView(music.getPath());
+
                     }
 
                     @Override
@@ -226,6 +284,13 @@ public class MainActivity extends BaseActivity {
                     }
 
                     @Override
+                    public void initShowLyric(boolean showLyric) {
+                        mmFragment.initShowLyric(showLyric);
+//                        lyricItem.setIcon(showLyric ? R.drawable.lyric_icon_on : R.drawable.lyric_icon_off);
+                        initLyricItem(showLyric);
+                    }
+
+                    @Override
                     public void updateTime(int time) {
                         mmFragment.updateTime(time);
                     }
@@ -233,6 +298,11 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void setMusics(List<Music> musics) {
                         mlFragment.setMusics(musics);
+                    }
+
+                    @Override
+                    public void onBackgroundTypeChange(int background) {
+                        setBackground(background, playBinder.getCurrentMusic().getPath());
                     }
                 });
 
@@ -242,14 +312,19 @@ public class MainActivity extends BaseActivity {
                     playBinder.initMusicList();
                     mmFragment.initRandomView(playBinder.isRandom());
                     mmFragment.initCycleView(playBinder.getCycle());
+                    mmFragment.initShowLyric(playBinder.getShowLyric());
+                    initLyricItem(playBinder.getShowLyric());
                 } else {
                     Music music = playBinder.getCurrentMusic();
                     mmFragment.setDuration(music.getDuration());
                     setTitle(TextUtils.isEmpty(music.getTitle()) ? music.getName() : music.getTitle());
-                    setBackground(music.getPath());
+                    setBackground(playBinder.getBackground(), music.getPath());
+
                     mmFragment.initPlayView(playBinder.isPlaying());
                     mmFragment.initRandomView(playBinder.isRandom());
                     mmFragment.initCycleView(playBinder.getCycle());
+                    mmFragment.initShowLyric(playBinder.getShowLyric());
+                    initLyricItem(playBinder.getShowLyric());
                     mmFragment.initLyricView(music.getPath().replace(".mp3", ".lrc").replace(".wma", ".lrc"));
                     mlFragment.setMusics(musics);
                 }

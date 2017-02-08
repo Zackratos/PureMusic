@@ -58,6 +58,15 @@ public class PreferenceUtil {
         getEditor(context).putInt("background", background).apply();
     }
 
+    public static boolean getShowLyric(Context context) {
+        return getPreferences(context).getBoolean("showLyric", false);
+    }
+
+    public static void putShowLyric(Context context, boolean showLyric) {
+        getEditor(context).putBoolean("showLyric", showLyric).apply();
+
+    }
+
 /*    public static boolean isTranBackground(Context context) {
         return getPreferences(context).getBoolean("tranBackground", false);
     }
