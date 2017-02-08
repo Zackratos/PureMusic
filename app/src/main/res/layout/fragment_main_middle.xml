@@ -174,9 +174,23 @@
                 android:textSize="60dp"
                 android:textColor="@android:color/white"/>
         </LinearLayout>
+
+
+        <org.zack.music.LyricView
+            android:id="@+id/middle_lyric"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            app:fadeInFadeOut="true"
+            app:hint="未找到歌词"
+            app:hintColor="@android:color/white"
+            app:textSize="18dp"
+            app:textColor="@color/halfTransparent"
+            app:highlightColor="@android:color/white" />
+
     </FrameLayout>
 
-    <FrameLayout
+<!--    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/middle_bottom_schedule_whole"
@@ -188,7 +202,7 @@
             android:layout_gravity="center"
             android:textColor="@android:color/white"
             android:textSize="18dp"/>
-    </FrameLayout>
+    </FrameLayout>-->
 
 
 </RelativeLayout>

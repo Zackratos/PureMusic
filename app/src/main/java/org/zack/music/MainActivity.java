@@ -38,6 +38,8 @@ public class MainActivity extends BaseActivity {
 
     private ImageView backgroundView;
 
+    private MenuItem lyricItem;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +52,11 @@ public class MainActivity extends BaseActivity {
     }
 
 
-
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        lyricItem = menu.findItem(R.id.menu_lyric);
+        return super.onPrepareOptionsMenu(menu);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -62,6 +68,8 @@ public class MainActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_setup) {
             startActivity(SetupActivity.newIntent(this));
+        } else if (item.getItemId() == R.id.menu_lyric) {
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -96,6 +104,9 @@ public class MainActivity extends BaseActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar).findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+//        lyricItem = (MenuItem) findViewById(R.id.menu_lyric);
+
 
         dl = (DrawerLayout) findViewById(R.id.main_drawer);
         FragmentManager fm = getSupportFragmentManager();
@@ -187,12 +198,16 @@ public class MainActivity extends BaseActivity {
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                 playBinder = (PlayService.PlayBinder) iBinder;
 
-                playBinder.setCallBack(new PlayService.CallBack() {
+                playBinder.setCallBack(new PlayService.MainCallBack() {
                     @Override
                     public void onMusicChange(Music music) {
                         mmFragment.setDuration(music.getDuration());
                         setTitle(TextUtils.isEmpty(music.getTitle()) ? music.getName() : music.getTitle());
                         setBackground(music.getPath());
+                        mmFragment.initLyricView(music.getPath().replace(".mp3", ".lrc").replace(".wma", ".lrc"));
+//                        Log.d("TAG", music.getPath());
+//                        Log.d("TAG", music.getName());
+//                        mmFragment.initLyricView(music.getPath());
                     }
 
                     @Override
@@ -212,7 +227,6 @@ public class MainActivity extends BaseActivity {
 
                     @Override
                     public void updateTime(int time) {
-                        Log.d("TAG", "updateTime");
                         mmFragment.updateTime(time);
                     }
 
@@ -236,6 +250,7 @@ public class MainActivity extends BaseActivity {
                     mmFragment.initPlayView(playBinder.isPlaying());
                     mmFragment.initRandomView(playBinder.isRandom());
                     mmFragment.initCycleView(playBinder.getCycle());
+                    mmFragment.initLyricView(music.getPath().replace(".mp3", ".lrc").replace(".wma", ".lrc"));
                     mlFragment.setMusics(musics);
                 }
 

@@ -11,7 +11,7 @@
 
     <!-- TODO: Update blank fragment layout -->
     <RelativeLayout
-        android:id="@+id/transParent_background_whole"
+        android:id="@+id/tran_background_whole"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:orientation="horizontal"
@@ -29,7 +29,7 @@
             android:textSize="18dp"
             android:textColor="@color/white"/>
         <android.support.v7.widget.SwitchCompat
-            android:id="@+id/transParent_switch"
+            android:id="@+id/tran_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"

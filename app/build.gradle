@@ -28,8 +28,9 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:24.2.1'
     compile 'com.android.support:support-v4:24.2.1'
     compile 'com.android.support:cardview-v7:24.2.1'
-
-//    compile 'com.github.feeeei:CircleSeekbar:v1.1.2'
-//    compile 'com.github.woxingxiao:BubbleSeekBar:v1.6'
+    //    compile 'com.github.feeeei:CircleSeekbar:v1.1.2'
+    //    compile 'com.github.woxingxiao:BubbleSeekBar:v1.6'
     compile 'org.adw.library:discrete-seekbar:1.0.1'
+    //    compile 'com.github.zhengken:LyricViewDemo:v1.0'
+    compile files('libs/juniversalchardet-1.0.3.jar')
 }

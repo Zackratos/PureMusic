@@ -20,7 +20,7 @@ public class Music {
     private String album;
     private String artist;
     private String path;
-    private Bitmap image;
+//    private Bitmap image;
     private long duration;
 
     private Music(MusicBuilder builder) {
@@ -29,7 +29,7 @@ public class Music {
         album = builder.album;
         artist = builder.artist;
         path = builder.path;
-        image = builder.image;
+//        image = builder.image;
         duration = builder.duration;
     }
 
@@ -41,13 +41,13 @@ public class Music {
         this.path = path;
     }
 
-    public Bitmap getImage() {
+/*    public Bitmap getImage() {
         return image;
     }
 
     public void setImage(Bitmap image) {
         this.image = image;
-    }
+    }*/
 
     public String getAlbum() {
         return album;
@@ -117,30 +117,33 @@ public class Music {
                 null, null, null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
         List<Music> musics = new ArrayList<>();
         try {
-            if (cursor.moveToFirst()) {
+//            if (cursor.moveToFirst()) {
                 while (cursor.moveToNext()) {
-                    String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
-                    String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
-                    String path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
-                    String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
-                    String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
                     long duration = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
-                    Music music = new Music.MusicBuilder()
-                            .title(title)
-                            .album(album)
-                            .path(path)
-                            .name(name)
-                            .artist(artist)
-                            .duration(duration)
-                            .builder();
-                    musics.add(music);
+                    if (duration >= 20 * 1000) {
+                        String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
+                        String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
+                        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
+                        String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
+                        String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
+                        Music music = new Music.MusicBuilder()
+                                .title(title)
+                                .album(album)
+                                .path(path)
+                                .name(name)
+                                .artist(artist)
+                                .duration(duration)
+                                .builder();
+                        musics.add(music);
+                    }
                 }
-            }
+//            }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return musics;
     }
+
 
 
 
@@ -150,7 +153,7 @@ public class Music {
         private String album;
         private String artist;
         private String path;
-        private Bitmap image;
+//        private Bitmap image;
         private long duration;
 
         public MusicBuilder title(String title) {
@@ -178,10 +181,10 @@ public class Music {
             return this;
         }
 
-        public MusicBuilder image(Bitmap image) {
+/*        public MusicBuilder image(Bitmap image) {
             this.image = image;
             return this;
-        }
+        }*/
 
         public MusicBuilder duration(long duration) {
             this.duration = duration;

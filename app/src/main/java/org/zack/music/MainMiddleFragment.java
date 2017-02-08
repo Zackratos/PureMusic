@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
+import java.io.File;
 import java.util.List;
 
 
@@ -38,6 +39,7 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
     private ImageView cycleView, randomView;
     private TextView durationView, bottomDurationView;
     private TextView currentView, bottomCurrentView;
+    private LyricView lyricView;
 
     private DiscreteSeekBar lineSeekBar;
     private CircularSeekBar circleSeekBar;
@@ -121,6 +123,8 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
         bottomDurationView = (TextView) view.findViewById(R.id.middle_bottom_duration);
         currentView = (TextView) view.findViewById(R.id.middle_current_time);
         bottomCurrentView = (TextView) view.findViewById(R.id.middle_bottom_current_time);
+        lyricView = (LyricView) view.findViewById(R.id.middle_lyric);
+
 
         playView.setOnClickListener(this);
         previousView.setOnClickListener(this);
@@ -241,6 +245,14 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
         randomView.setImageResource(random ? R.drawable.random_icon_on : R.drawable.random_icon_off);
     }
 
+    public void initLyricView(String path) {
+        try {
+            lyricView.setLyricFile(new File(path));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void updateTime(int time) {
         int durationSecond = getDurationSecond(time);
         String durationText = getDurationText(durationSecond);
@@ -248,6 +260,8 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
         bottomCurrentView.setText(durationText);
         lineSeekBar.setProgress(durationSecond);
         circleSeekBar.setProgress(durationSecond);
+
+        lyricView.setCurrentTimeMillis(time);
     }
 
 

@@ -139,6 +139,10 @@ public class MainLeftFragment extends Fragment {
     }
 
 
+    public void initRecyclerViewPosition(int position) {
+
+    }
+
     private void setMusicBackground() {
 
     }
@@ -164,15 +168,15 @@ public class MainLeftFragment extends Fragment {
             artistView.setText(music.getArtist());
 
 
-            Bitmap icon = music.getImage();
+//            Bitmap icon = music.getImage();
 
 //            backgroundView.setImageBitmap(background == null ?
 //                    BitmapFactory.decodeResource(getResources(), R.drawable.album_icon) : background);
-            if (icon != null) {
+/*            if (icon != null) {
                 iconView.setImageBitmap(icon);
             } else {
                 iconView.setImageResource(R.drawable.album_icon);
-            }
+            }*/
 
 
 

@@ -26,7 +26,8 @@ import java.util.Random;
 
 public class PlayService extends Service {
 
-    private CallBack callBack;
+    private MainCallBack mainCallBack;
+    private SetupCallBack setupCallBack;
 
     private MediaPlayer mp;
     private int current;
@@ -34,6 +35,7 @@ public class PlayService extends Service {
     private List<Music> musics;
     private boolean random;
     private int cycle;
+    private int background;
 
     private Handler handler;
     private Runnable runnable;
@@ -60,6 +62,7 @@ public class PlayService extends Service {
         current = PreferenceUtil.getCurrent(this);
         random = PreferenceUtil.isRandom(this);
         cycle = PreferenceUtil.getCycle(this);
+        background = PreferenceUtil.getBackground(this);
 
         mp = new MediaPlayer();
         mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -116,8 +119,8 @@ public class PlayService extends Service {
         runnable = new Runnable() {
             @Override
             public void run() {
-                if (callBack != null) {
-                    callBack.updateTime(mp.getCurrentPosition());
+                if (mainCallBack != null) {
+                    mainCallBack.updateTime(mp.getCurrentPosition());
                     handler.postDelayed(this, 500);
                 }
             }
@@ -135,45 +138,16 @@ public class PlayService extends Service {
         PreferenceUtil.putCurrent(this, current);
         PreferenceUtil.putRandom(this, random);
         PreferenceUtil.putCycle(this, cycle);
+        PreferenceUtil.putBackground(this, background);
         handler.removeCallbacks(runnable);
     }
 
 
-/*    private List<Music> getMusicList() {
-        ContentResolver cr = getContentResolver();
-        Cursor cursor = cr.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                null, null, null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
-        List<Music> musics = new ArrayList<>();
-        try {
-            if (cursor.moveToFirst()) {
-                while (cursor.moveToNext()) {
-                    String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
-                    String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
-                    String path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
-                    String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
-                    long duration = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
-                    Music music = new Music.MusicBuilder()
-                            .title(title)
-                            .album(album)
-                            .path(path)
-                            .name(name)
-                            .duration(duration)
-                            .builder();
-                    musics.add(music);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return musics;
-    }*/
-
-
 
     private void setDataSource(Music music) {
-        if (callBack != null) {
-            callBack.onMusicChange(music);
-            Log.d("TAG", "callBack != null");
+        if (mainCallBack != null) {
+            mainCallBack.onMusicChange(music);
+            Log.d("TAG", "mainCallBack != null");
         }
         try {
             mp.reset();
@@ -248,8 +222,8 @@ public class PlayService extends Service {
                 }
             }
 
-            if (callBack != null) {
-                callBack.initPlayView(mp.isPlaying());
+            if (mainCallBack != null) {
+                mainCallBack.initPlayView(mp.isPlaying());
             }
         }
 
@@ -295,8 +269,8 @@ public class PlayService extends Service {
 
         public void clickRandom() {
             random = !random;
-            if (callBack != null) {
-                callBack.initRandomView(random);
+            if (mainCallBack != null) {
+                mainCallBack.initRandomView(random);
             }
         }
 
@@ -309,8 +283,8 @@ public class PlayService extends Service {
                 cycle = PreferenceUtil.NO_CYCLE;
             }
 
-            if (callBack != null) {
-                callBack.initCycleView(cycle);
+            if (mainCallBack != null) {
+                mainCallBack.initCycleView(cycle);
             }
         }
 
@@ -348,8 +322,8 @@ public class PlayService extends Service {
                 public boolean handleMessage(Message msg) {
                     if (msg.what == 0 && musics != null && musics.size() > current) {
                         setDataSource(musics.get(current));
-                        if (callBack != null) {
-                            callBack.setMusics(musics);
+                        if (mainCallBack != null) {
+                            mainCallBack.setMusics(musics);
                         }
                     }
                     return false;
@@ -380,17 +354,32 @@ public class PlayService extends Service {
             return musics;
         }
 
-        public void setCallBack(CallBack callBack) {
-            PlayService.this.callBack = callBack;
+        public void setCallBack(MainCallBack mainCallBack) {
+            PlayService.this.mainCallBack = mainCallBack;
         }
 
-        public CallBack getCallBack() {
-            return PlayService.this.callBack;
+        public MainCallBack getCallBack() {
+            return PlayService.this.mainCallBack;
+        }
+
+        public int getBackground() {
+            return background;
+        }
+
+        public void setBackground(int background) {
+            PlayService.this.background = background;
+            if (setupCallBack != null) {
+                setupCallBack.onBackgroundChange(PlayService.this.background);
+            }
+        }
+
+        public void setSetupCallBack(SetupCallBack setupCallBack) {
+            PlayService.this.setupCallBack = setupCallBack;
         }
     }
 
 
-    public interface CallBack {
+    public interface MainCallBack {
         void onMusicChange(Music music);
         void initPlayView(boolean isPlaying);
         void initCycleView(int cycle);
@@ -399,8 +388,12 @@ public class PlayService extends Service {
         void setMusics(List<Music> musics);
     }
 
-/*    public void setCallBack(CallBack callBack) {
-        this.callBack = callBack;
+    public interface SetupCallBack {
+        void onBackgroundChange(int background);
+    }
+
+/*    public void setCallBack(CallBack mainCallBack) {
+        this.mainCallBack = mainCallBack;
     }*/
 
 }
