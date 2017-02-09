@@ -38,6 +38,12 @@ public class MainLeftFragment extends Fragment {
     private List<Music> musics;
     private ListAdapter listAdapter;
 
+    private RecyclerView rv;
+    private LinearLayoutManager llm;
+
+
+    private int current = -1;
+
 
     public MainLeftFragment() {
         // Required empty public constructor
@@ -104,8 +110,8 @@ public class MainLeftFragment extends Fragment {
     }
 
     private void initView(View view) {
-        RecyclerView rv = (RecyclerView) view.findViewById(R.id.left_music_list);
-        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+        rv = (RecyclerView) view.findViewById(R.id.left_music_list);
+        llm = new LinearLayoutManager(getActivity());
         rv.setLayoutManager(llm);
 //        listAdapter = new ListAdapter();
         rv.setAdapter(listAdapter);
@@ -140,11 +146,14 @@ public class MainLeftFragment extends Fragment {
 
 
     public void initRecyclerViewPosition(int position) {
-
+        llm.scrollToPositionWithOffset(position, 0);
     }
 
-    private void setMusicBackground() {
-
+    public void initRecyclerViewItemDisplay(int current, int last) {
+        Log.d("TAG", "current = " + current);
+        this.current = current;
+        listAdapter.notifyItemChanged(current);
+        listAdapter.notifyItemChanged(last);
     }
 
 
@@ -153,12 +162,15 @@ public class MainLeftFragment extends Fragment {
         private TextView albumView;
         private ImageView iconView;
         private TextView artistView;
+        private ImageView playingView;
         public ListViewHolder(View itemView) {
             super(itemView);
             titleView = (TextView) itemView.findViewById(R.id.music_title);
             iconView = (ImageView) itemView.findViewById(R.id.music_icon);
             albumView = (TextView) itemView.findViewById(R.id.music_album);
             artistView = (TextView) itemView.findViewById(R.id.music_artist);
+            playingView = (ImageView) itemView.findViewById(R.id.music_playing);
+
         }
 
         public void initView(final int position) {
@@ -166,7 +178,7 @@ public class MainLeftFragment extends Fragment {
             titleView.setText(!TextUtils.isEmpty(music.getTitle()) ? music.getTitle() : music.getName());
             albumView.setText(music.getAlbum());
             artistView.setText(music.getArtist());
-
+            playingView.setVisibility(position == current ? View.VISIBLE : View.INVISIBLE);
 
 //            Bitmap icon = music.getImage();
 

@@ -185,7 +185,7 @@
             app:hint="未找到歌词"
             app:hintColor="@android:color/white"
             app:textSize="18dp"
-            app:textColor="@color/halfTransparent"
+            app:textColor="@color/SlateGray"
             app:highlightColor="@android:color/white" />
 
     </FrameLayout>

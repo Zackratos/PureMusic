@@ -1,6 +1,7 @@
 package org.zack.music;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -61,6 +62,7 @@ public class PlayService extends Service {
 
         super.onCreate();
         current = PreferenceUtil.getCurrent(this);
+        last = current;
         random = PreferenceUtil.isRandom(this);
         cycle = PreferenceUtil.getCycle(this);
         background = PreferenceUtil.getBackground(this);
@@ -74,7 +76,7 @@ public class PlayService extends Service {
                 if (musics != null && current < musics.size()) {
 //                    setDataSource(musics.get(++current));
                     if (cycle == PreferenceUtil.SINGLE_CYCLE) {
-                        setDataSource(musics.get(current));
+                        setDataSource(current);
                     } else {
                         if (random) {
                             setRandom();
@@ -108,14 +110,7 @@ public class PlayService extends Service {
 
 
 
-        Notification notification = new NotificationCompat.Builder(this)
-                .setContentTitle("sjlf")
-                .setContentText("sjldfkj")
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-                .setSmallIcon(R.drawable.notification_icon)
-                .build();
 
-        startForeground(1, notification);
 
         handler = new Handler();
         runnable = new Runnable() {
@@ -147,7 +142,48 @@ public class PlayService extends Service {
 
 
 
-    private void setDataSource(Music music) {
+    private void popNotification(final Music music) {
+//        if (musics != null && musics.size() > current) {
+//            Music music = musics.get(current);
+        final Handler handler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message message) {
+                Intent intent = MainActivity.newIntent(PlayService.this);
+                PendingIntent pi = PendingIntent.getActivity(PlayService.this, 0, intent, 0);
+                Notification notification = new NotificationCompat.Builder(PlayService.this)
+                        .setContentTitle(music.getTitle() == null ? music.getName() : music.getTitle())
+                        .setContentText(music.getArtist())
+                        .setLargeIcon((Bitmap) message.obj)
+                        .setContentIntent(pi)
+                        .setSmallIcon(R.drawable.notification_icon)
+                        .build();
+
+                startForeground(1, notification);
+                return false;
+            }
+        });
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap bitmap = Music.createAlbumArt(music.getPath());
+                if (bitmap == null) {
+                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.album_icon);
+                }
+
+                Message msg = handler.obtainMessage();
+                msg.obj = bitmap;
+                handler.sendMessage(msg);
+            }
+        }).start();
+
+
+//        }
+    }
+
+
+    private void setDataSource(int current) {
+        Music music = musics.get(current);
         if (mainCallBack != null) {
             mainCallBack.onMusicChange(music);
             Log.d("TAG", "mainCallBack != null");
@@ -160,6 +196,8 @@ public class PlayService extends Service {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        popNotification(music);
     }
 
 
@@ -179,22 +217,25 @@ public class PlayService extends Service {
 
     private void setNext() {
         if (cycle == PreferenceUtil.ALL_CYCLE) {
+            last = current;
             if (musics.size() - 1 > current) {
                 current++;
             } else {
                 current = 0;
             }
-            setDataSource(musics.get(current));
+            setDataSource(current);
         } else {
             if (musics.size() - 1 > current) {
-                setDataSource(musics.get(++current));
+                last = current;
+                setDataSource(++current);
             }
         }
     }
 
     private void setRandom() {
+        last = current;
         current = new Random().nextInt(musics.size());
-        setDataSource(musics.get(current));
+        setDataSource(current);
     }
 
 
@@ -256,15 +297,17 @@ public class PlayService extends Service {
                     setRandom();
                 } else {
                     if (cycle == PreferenceUtil.ALL_CYCLE) {
+                        last = current;
                         if (current > 0) {
                             current--;
                         } else {
                             current = musics.size() - 1;
                         }
-                        setDataSource(musics.get(current));
+                        setDataSource(current);
                     } else {
                         if (current > 0) {
-                            setDataSource(musics.get(--current));
+                            last = current;
+                            setDataSource(--current);
                         }
                     }
                 }
@@ -320,8 +363,9 @@ public class PlayService extends Service {
         public void clickPosition(int position) {
             if (musics != null && musics.size() > position) {
                 boolean isPlaying = mp.isPlaying();
+                last = current;
                 current = position;
-                setDataSource(musics.get(current));
+                setDataSource(current);
                 if (isPlaying) {
                     startPlay();
                 }
@@ -335,10 +379,10 @@ public class PlayService extends Service {
                 @Override
                 public boolean handleMessage(Message msg) {
                     if (msg.what == 0 && musics != null && musics.size() > current) {
-                        setDataSource(musics.get(current));
                         if (mainCallBack != null) {
                             mainCallBack.setMusics(musics);
                         }
+                        setDataSource(current);
                     }
                     return false;
                 }
@@ -364,11 +408,19 @@ public class PlayService extends Service {
             return null;
         }
 
+        public int getCurrent() {
+            return current;
+        }
+
+        public int getLast() {
+            return last;
+        }
+
         public List<Music> getMusicList() {
             return musics;
         }
 
-        public void setCallBack(MainCallBack mainCallBack) {
+        public void setMainCallBack(MainCallBack mainCallBack) {
             PlayService.this.mainCallBack = mainCallBack;
         }
 
@@ -378,6 +430,10 @@ public class PlayService extends Service {
 
         public int getBackground() {
             return background;
+        }
+
+        public void popServiceNotification() {
+            popNotification(musics.get(current));
         }
 
         public void setBackground(int background) {

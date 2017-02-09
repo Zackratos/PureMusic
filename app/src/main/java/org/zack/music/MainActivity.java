@@ -1,8 +1,12 @@
 package org.zack.music;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -10,9 +14,12 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
@@ -42,6 +49,14 @@ public class MainActivity extends BaseActivity {
 
     private MenuItem lyricItem;
 
+    private boolean hasBindService;
+
+    public static Intent newIntent(Context context) {
+        Intent intent = new Intent(context, MainActivity.class);
+        return intent;
+    }
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,15 +64,23 @@ public class MainActivity extends BaseActivity {
         initService();
         initView();
 
-        bindService(PlayService.newIntent(this), connection, BIND_AUTO_CREATE);
-        startService(PlayService.newIntent(this));
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.
+                READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]
+                    {Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+        } else {
+            hasBindService = bindService(PlayService.newIntent(this), connection, BIND_AUTO_CREATE);
+            startService(PlayService.newIntent(this));
+        }
     }
 
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         lyricItem = menu.findItem(R.id.menu_lyric);
-        initLyricItem(playBinder.getShowLyric());
+        if (playBinder != null) {
+            initLyricItem(playBinder.getShowLyric());
+        }
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -89,9 +112,23 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(connection);
-        if (!playBinder.isPlaying()) {
+        if (hasBindService) {
+            unbindService(connection);
+        }
+        if (playBinder != null && !playBinder.isPlaying()) {
             stopService(PlayService.newIntent(this));
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 1) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                hasBindService = bindService(PlayService.newIntent(this), connection, BIND_AUTO_CREATE);
+                startService(PlayService.newIntent(this));
+            } else {
+                finish();
+            }
         }
     }
 
@@ -287,14 +324,15 @@ public class MainActivity extends BaseActivity {
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                 playBinder = (PlayService.PlayBinder) iBinder;
 
-                playBinder.setCallBack(new PlayService.MainCallBack() {
+                playBinder.setMainCallBack(new PlayService.MainCallBack() {
                     @Override
                     public void onMusicChange(Music music) {
                         mmFragment.setDuration(music.getDuration());
                         setTitle(TextUtils.isEmpty(music.getTitle()) ? music.getName() : music.getTitle());
                         setBackground(playBinder.getBackground(), music.getPath());
                         mmFragment.initLyricView(music.getPath().replace(".mp3", ".lrc").replace(".wma", ".lrc"));
-
+                        mlFragment.initRecyclerViewPosition(playBinder.getCurrent());
+                        mlFragment.initRecyclerViewItemDisplay(playBinder.getCurrent(), playBinder.getLast());
                     }
 
                     @Override
@@ -358,13 +396,15 @@ public class MainActivity extends BaseActivity {
                     initLyricItem(playBinder.getShowLyric());
                     mmFragment.initLyricView(music.getPath().replace(".mp3", ".lrc").replace(".wma", ".lrc"));
                     mlFragment.setMusics(musics);
+                    mlFragment.initRecyclerViewPosition(playBinder.getCurrent());
+                    mlFragment.initRecyclerViewItemDisplay(playBinder.getCurrent(), playBinder.getLast());
                 }
 
             }
 
             @Override
             public void onServiceDisconnected(ComponentName componentName) {
-                playBinder.setCallBack(null);
+                playBinder.setMainCallBack(null);
             }
         };
 
