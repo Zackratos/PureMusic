@@ -117,8 +117,8 @@ public class Music {
                 null, null, null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
         List<Music> musics = new ArrayList<>();
         try {
-//            if (cursor.moveToFirst()) {
-                while (cursor.moveToNext()) {
+            if (cursor.moveToFirst()) {
+                do {
                     long duration = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
                     if (duration >= 20 * 1000) {
                         String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
@@ -136,8 +136,8 @@ public class Music {
                                 .builder();
                         musics.add(music);
                     }
-                }
-//            }
+                } while (cursor.moveToNext());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

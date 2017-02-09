@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -193,41 +194,69 @@ public class MainActivity extends BaseActivity {
 
     }
 
-    private void setBackgroundGirl(int random) {
-        switch (random) {
+    private void setBackgroundGirl(final int random) {
+        final Handler handler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                backgroundView.setImageDrawable((Drawable) msg.obj);
+                return false;
+            }
+        });
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Drawable drawable = getResources().getDrawable(getResources()
+                        .getIdentifier("background_" + random, "drawable", getPackageName()));
+                Message msg = handler.obtainMessage();
+                msg.obj = drawable;
+                handler.sendMessage(msg);
+            }
+        }).start();
+/*        switch (random) {
             case 0:
-                backgroundView.setImageResource(R.drawable.background_0);
+//                backgroundView.setImageResource(R.drawable.background_0);
+                backgroundView.setImageDrawable(getResources().getDrawable(R.drawable.background_0));
                 break;
             case 1:
-                backgroundView.setImageResource(R.drawable.background_1);
+//                backgroundView.setImageResource(R.drawable.background_1);
+                backgroundView.setImageDrawable(getResources().getDrawable(R.drawable.background_1));
                 break;
             case 2:
-                backgroundView.setImageResource(R.drawable.background_2);
+//                backgroundView.setImageResource(R.drawable.background_2);
+                backgroundView.setImageDrawable(getResources().getDrawable(R.drawable.background_2));
                 break;
             case 3:
-                backgroundView.setImageResource(R.drawable.background_3);
+//                backgroundView.setImageResource(R.drawable.background_3);
+                backgroundView.setImageDrawable(getResources().getDrawable(R.drawable.background_3));
                 break;
             case 4:
-                backgroundView.setImageResource(R.drawable.background_4);
+//                backgroundView.setImageResource(R.drawable.background_4);
+                backgroundView.setImageDrawable(getResources().getDrawable(R.drawable.background_4));
                 break;
             case 5:
-                backgroundView.setImageResource(R.drawable.background_5);
+//                backgroundView.setImageResource(R.drawable.background_5);
+                backgroundView.setImageDrawable(getResources().getDrawable(R.drawable.background_5));
                 break;
             case 6:
-                backgroundView.setImageResource(R.drawable.background_6);
+//                backgroundView.setImageResource(R.drawable.background_6);
+                backgroundView.setImageDrawable(getResources().getDrawable(R.drawable.background_6));
                 break;
             case 7:
-                backgroundView.setImageResource(R.drawable.background_7);
+//                backgroundView.setImageResource(R.drawable.background_7);
+                backgroundView.setImageDrawable(getResources().getDrawable(R.drawable.background_7));
                 break;
             case 8:
-                backgroundView.setImageResource(R.drawable.background_8);
+//                backgroundView.setImageResource(R.drawable.background_8);
+                backgroundView.setImageDrawable(getResources().getDrawable(R.drawable.background_8));
                 break;
             case 9:
-                backgroundView.setImageResource(R.drawable.background_9);
+//                backgroundView.setImageResource(R.drawable.background_9);
+                backgroundView.setImageDrawable(getResources().getDrawable(R.drawable.background_9));
                 break;
             default:
                 break;
-        }
+        }*/
     }
 
     private void setBackgroundTran() {
@@ -302,7 +331,9 @@ public class MainActivity extends BaseActivity {
 
                     @Override
                     public void onBackgroundTypeChange(int background) {
-                        setBackground(background, playBinder.getCurrentMusic().getPath());
+                        if (playBinder.getCurrentMusic() != null) {
+                            setBackground(background, playBinder.getCurrentMusic().getPath());
+                        }
                     }
                 });
 

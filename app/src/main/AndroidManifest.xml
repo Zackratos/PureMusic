@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="org.zack.music">
 
-    <uses-sdk
+<!--    <uses-sdk
         tools:overrideLibrary="android.support.v7.appcompat,
         android.support.v4,
         android.support.compat,
@@ -13,7 +13,7 @@
         android.support.fragment,
         android.support.graphics.drawable,
         android.support.design,
-        android.support.v7.recyclerview" />
+        android.support.v7.recyclerview" />-->
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
@@ -31,6 +31,9 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                <!--<data android:mimeType="audio/*"/>-->
+                <!--<action android:name="android.intent.action.VIEW"/>-->
+                <!--<category android:name="android.intent.category.DEFAULT"/>-->
             </intent-filter>
         </activity>
         <activity
