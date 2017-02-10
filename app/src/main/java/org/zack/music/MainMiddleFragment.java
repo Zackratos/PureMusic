@@ -260,6 +260,7 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
 
     public void updateTime(int time) {
         int durationSecond = getDurationSecond(time);
+        Log.d("TAG", "second " + durationSecond);
         String durationText = getDurationText(durationSecond);
 //        currentView.setText(durationText);
         bottomCurrentView.setText(durationText);

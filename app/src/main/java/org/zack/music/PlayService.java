@@ -184,13 +184,19 @@ public class PlayService extends Service {
 
     private void setDataSource(int current) {
         Music music = musics.get(current);
+        Log.d("TAG", "musicPath = " + music.getPath());
         if (mainCallBack != null) {
             mainCallBack.onMusicChange(music);
             Log.d("TAG", "mainCallBack != null");
         }
         try {
+            if (mp == null) {
+                Log.d("TAG", "mp == null");
+            }
             mp.reset();
+            Log.d("TAG", "mp.reset");
             mp.setDataSource(music.getPath());
+            Log.d("TAG", "mp.setDataSource");
             mp.prepare();
             Log.d("TAG", "mp.prepare");
         } catch (IOException e) {
