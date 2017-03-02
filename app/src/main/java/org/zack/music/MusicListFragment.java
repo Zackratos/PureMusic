@@ -1,19 +1,7 @@
 package org.zack.music;
 
-import android.content.ContentResolver;
-import android.content.Context;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.MediaMetadataRetriever;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.support.v4.text.TextUtilsCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -24,12 +12,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
 
-public class MainLeftFragment extends Fragment {
+public class MusicListFragment extends Fragment {
 
 
     private MainLeftListener listener;
@@ -45,12 +32,12 @@ public class MainLeftFragment extends Fragment {
     private int current = -1;
 
 
-    public MainLeftFragment() {
+    public MusicListFragment() {
         // Required empty public constructor
     }
 
-    public static MainLeftFragment newInstance() {
-        MainLeftFragment fragment = new MainLeftFragment();
+    public static MusicListFragment newInstance() {
+        MusicListFragment fragment = new MusicListFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -104,7 +91,7 @@ public class MainLeftFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_main_left, container, false);
+        View view = inflater.inflate(R.layout.fragment_music_list, container, false);
         initView(view);
         return view;
     }

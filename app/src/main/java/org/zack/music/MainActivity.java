@@ -1,16 +1,13 @@
 package org.zack.music;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -25,7 +22,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,8 +38,8 @@ public class MainActivity extends BaseActivity {
     private ServiceConnection connection;
     private PlayService.PlayBinder playBinder;
 
-    private MainMiddleFragment mmFragment;
-    private MainLeftFragment mlFragment;
+    private PlayFragment mmFragment;
+    private MusicListFragment mlFragment;
 
     private ImageView backgroundView;
 
@@ -150,9 +146,9 @@ public class MainActivity extends BaseActivity {
 
         dl = (DrawerLayout) findViewById(R.id.main_drawer);
         FragmentManager fm = getSupportFragmentManager();
-        mmFragment = MainMiddleFragment.newInstance();
-        mlFragment = MainLeftFragment.newInstance();
-        mmFragment.setMainMiddleListener(new MainMiddleFragment.MainMiddleListener() {
+        mmFragment = PlayFragment.newInstance();
+        mlFragment = MusicListFragment.newInstance();
+        mmFragment.setMainMiddleListener(new PlayFragment.MainMiddleListener() {
 
             @Override
             public void clickPlay() {
@@ -191,7 +187,7 @@ public class MainActivity extends BaseActivity {
 
         });
 
-        mlFragment.setMainLeftListener(new MainLeftFragment.MainLeftListener() {
+        mlFragment.setMainLeftListener(new MusicListFragment.MainLeftListener() {
             @Override
             public void clickPosition(int position) {
                 playBinder.clickPosition(position);

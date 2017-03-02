@@ -1,12 +1,7 @@
 package org.zack.music;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +11,9 @@ import android.widget.TextView;
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 import java.io.File;
-import java.util.List;
 
 
-public class MainMiddleFragment extends Fragment implements View.OnClickListener, View.OnLongClickListener {
+public class PlayFragment extends Fragment implements View.OnClickListener, View.OnLongClickListener {
 
 
     private MainMiddleListener listener;
@@ -38,8 +32,8 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
     private CircularSeekBar circleSeekBar;
 
 
-    public static MainMiddleFragment newInstance() {
-        MainMiddleFragment fragment = new MainMiddleFragment();
+    public static PlayFragment newInstance() {
+        PlayFragment fragment = new PlayFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -106,7 +100,7 @@ public class MainMiddleFragment extends Fragment implements View.OnClickListener
     }
 
     private View initView(LayoutInflater inflater, ViewGroup container) {
-        View view = inflater.inflate(R.layout.fragment_main_middle, container, false);
+        View view = inflater.inflate(R.layout.fragment_play, container, false);
         playView = (ImageView) view.findViewById(R.id.middle_play);
         previousView = (ImageView) view.findViewById(R.id.middle_previous);
         nextView = (ImageView) view.findViewById(R.id.middle_next);

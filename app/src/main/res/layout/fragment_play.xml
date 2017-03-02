@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp"
-    tools:context="org.zack.music.MainMiddleFragment">
+    tools:context="org.zack.music.PlayFragment">
 
     <!-- TODO: Update blank fragment layout -->
 

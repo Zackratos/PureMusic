@@ -17,7 +17,7 @@ android {
         targetSdkVersion 24
         versionCode 2
         versionName "1.0.1"
-        signingConfig signingConfigs.config
+//        signingConfig signingConfigs.config
     }
     buildTypes {
         release {
@@ -25,7 +25,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
-            signingConfig signingConfigs.config
+//            signingConfig signingConfigs.config
         }
     }
     productFlavors {
@@ -45,5 +45,5 @@ dependencies {
     //    compile 'com.github.woxingxiao:BubbleSeekBar:v1.6'
     compile 'org.adw.library:discrete-seekbar:1.0.1'
     //    compile 'com.github.zhengken:LyricViewDemo:v1.0'
-    compile files('libs/juniversalchardet-1.0.3.jar')
+//    compile files('libs/juniversalchardet-1.0.3.jar')
 }

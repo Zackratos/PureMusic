@@ -334,13 +334,13 @@ public class PlayService extends Service {
                 } else {
                     startPlay();
                 }
+                popNotification(musics.get(current));
             }
 
             if (mainCallBack != null) {
                 mainCallBack.initPlayView(mp.isPlaying());
             }
 
-            popNotification(musics.get(current));
 
         }
 
