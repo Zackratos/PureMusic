@@ -1,6 +1,7 @@
 package org.zack.music;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -8,11 +9,13 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -32,9 +35,15 @@ import android.widget.ImageView;
 import java.util.List;
 import java.util.Random;
 
-public class MainActivity extends BaseActivity {
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
-    private DrawerLayout dl;
+public class MainActivity extends BaseActivity {
+    @BindView(R.id.main_drawer)
+    DrawerLayout dl;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
     private ServiceConnection connection;
     private PlayService.PlayBinder playBinder;
 
@@ -45,7 +54,6 @@ public class MainActivity extends BaseActivity {
 
     private MenuItem lyricItem;
 
-    private boolean hasBindService;
 
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, MainActivity.class);
@@ -53,23 +61,40 @@ public class MainActivity extends BaseActivity {
     }
 
 
-    @Override
+
+
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         initService();
         initView();
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            requestRunTimePermission(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE});
+        }
+/*        if (ContextCompat.checkSelfPermission(this, Manifest.permission.
                 READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]
                     {Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         } else {
             hasBindService = bindService(PlayService.newIntent(this), connection, BIND_AUTO_CREATE);
             startService(PlayService.newIntent(this));
-        }
+        }*/
     }
 
+
+    @Override
+    protected void grantedPermission() {
+        bindService(PlayService.newIntent(this), connection, BIND_AUTO_CREATE);
+        startService(PlayService.newIntent(this));
+    }
+
+    @Override
+    protected void deniedPermission(List<String> deniedPermissions) {
+
+    }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -108,15 +133,13 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (hasBindService) {
-            unbindService(connection);
-        }
+        unbindService(connection);
         if (playBinder != null && !playBinder.isPlaying()) {
             stopService(PlayService.newIntent(this));
         }
     }
 
-    @Override
+/*    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == 1) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -126,7 +149,7 @@ public class MainActivity extends BaseActivity {
                 finish();
             }
         }
-    }
+    }*/
 
     private void initView() {
         FrameLayout decorView = (FrameLayout) getWindow().getDecorView();
@@ -138,13 +161,12 @@ public class MainActivity extends BaseActivity {
         backgroundView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         decorView.addView(backgroundView, 0);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar).findViewById(R.id.toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar).findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        lyricItem = (MenuItem) findViewById(R.id.menu_lyric);
 
 
-        dl = (DrawerLayout) findViewById(R.id.main_drawer);
+//        dl = (DrawerLayout) findViewById(R.id.main_drawer);
         FragmentManager fm = getSupportFragmentManager();
         mmFragment = PlayFragment.newInstance();
         mlFragment = MusicListFragment.newInstance();
@@ -246,50 +268,7 @@ public class MainActivity extends BaseActivity {
                 handler.sendMessage(msg);
             }
         }).start();
-/*        switch (random) {
-            case 0:
-//                backgroundView.setImageResource(R.drawable.background_0);
-                backgroundView.setImageDrawable(getResources().getDrawable(R.drawable.background_0));
-                break;
-            case 1:
-//                backgroundView.setImageResource(R.drawable.background_1);
-                backgroundView.setImageDrawable(getResources().getDrawable(R.drawable.background_1));
-                break;
-            case 2:
-//                backgroundView.setImageResource(R.drawable.background_2);
-                backgroundView.setImageDrawable(getResources().getDrawable(R.drawable.background_2));
-                break;
-            case 3:
-//                backgroundView.setImageResource(R.drawable.background_3);
-                backgroundView.setImageDrawable(getResources().getDrawable(R.drawable.background_3));
-                break;
-            case 4:
-//                backgroundView.setImageResource(R.drawable.background_4);
-                backgroundView.setImageDrawable(getResources().getDrawable(R.drawable.background_4));
-                break;
-            case 5:
-//                backgroundView.setImageResource(R.drawable.background_5);
-                backgroundView.setImageDrawable(getResources().getDrawable(R.drawable.background_5));
-                break;
-            case 6:
-//                backgroundView.setImageResource(R.drawable.background_6);
-                backgroundView.setImageDrawable(getResources().getDrawable(R.drawable.background_6));
-                break;
-            case 7:
-//                backgroundView.setImageResource(R.drawable.background_7);
-                backgroundView.setImageDrawable(getResources().getDrawable(R.drawable.background_7));
-                break;
-            case 8:
-//                backgroundView.setImageResource(R.drawable.background_8);
-                backgroundView.setImageDrawable(getResources().getDrawable(R.drawable.background_8));
-                break;
-            case 9:
-//                backgroundView.setImageResource(R.drawable.background_9);
-                backgroundView.setImageDrawable(getResources().getDrawable(R.drawable.background_9));
-                break;
-            default:
-                break;
-        }*/
+
     }
 
     private void setBackgroundTran() {

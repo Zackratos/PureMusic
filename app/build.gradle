@@ -35,15 +35,17 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    //    compile 'com.android.support.v7.recyclerview:24.2.1'
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
     compile 'com.android.support:recyclerview-v7:24.2.1'
     compile 'com.android.support:support-v4:24.2.1'
     compile 'com.android.support:cardview-v7:24.2.1'
+    compile 'org.adw.library:discrete-seekbar:1.0.1'
+    compile 'com.jakewharton:butterknife:8.5.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+
     //    compile 'com.github.feeeei:CircleSeekbar:v1.1.2'
     //    compile 'com.github.woxingxiao:BubbleSeekBar:v1.6'
-    compile 'org.adw.library:discrete-seekbar:1.0.1'
     //    compile 'com.github.zhengken:LyricViewDemo:v1.0'
 //    compile files('libs/juniversalchardet-1.0.3.jar')
 }
