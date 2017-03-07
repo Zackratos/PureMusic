@@ -97,15 +97,15 @@ public class SetupFragment extends Fragment implements View.OnClickListener, Com
         switch (view.getId()) {
             case R.id.tran_background_whole:
                 background = PreferenceUtil.TRAN_BACKGROUND;
-                playBinder.setBackground(background);
+                playBinder.setBackgroundType(background);
                 break;
             case R.id.girl_background_whole:
                 background = PreferenceUtil.GIRL_BACKGROUND;
-                playBinder.setBackground(background);
+                playBinder.setBackgroundType(background);
                 break;
             case R.id.inn_background_whole:
                 background = PreferenceUtil.INN_BACKGROUND;
-                playBinder.setBackground(background);
+                playBinder.setBackgroundType(background);
                 break;
             default:
                 break;
@@ -119,19 +119,19 @@ public class SetupFragment extends Fragment implements View.OnClickListener, Com
             case R.id.tran_switch:
                 if (isChecked) {
                     background = PreferenceUtil.TRAN_BACKGROUND;
-                    playBinder.setBackground(background);
+                    playBinder.setBackgroundType(background);
                 }
                 break;
             case R.id.girl_switch:
                 if (isChecked) {
                     background = PreferenceUtil.GIRL_BACKGROUND;
-                    playBinder.setBackground(background);
+                    playBinder.setBackgroundType(background);
                 }
                 break;
             case R.id.inn_switch:
                 if (isChecked) {
                     background = PreferenceUtil.INN_BACKGROUND;
-                    playBinder.setBackground(background);
+                    playBinder.setBackgroundType(background);
                 }
                 break;
             default:
@@ -145,7 +145,7 @@ public class SetupFragment extends Fragment implements View.OnClickListener, Com
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 playBinder = (PlayService.PlayBinder) service;
-                background = playBinder.getBackground();
+                background = playBinder.getBackgroundType();
                 initBackgroundSwitch();
                 playBinder.setSetupCallBack(new PlayService.SetupCallBack() {
                     @Override

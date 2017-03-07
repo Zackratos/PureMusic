@@ -209,7 +209,7 @@ public class MusicListFragment extends Fragment {
 
 /*            if (background != null) {
                 backgroundView.setImageBitmap(background);
-                music.setBackground(background);
+                music.setBackgroundType(background);
             } else {
                 Log.d("TAG", "background = " + background);
                 new AsyncTask<Void, Void, Bitmap>() {
@@ -217,7 +217,7 @@ public class MusicListFragment extends Fragment {
                     protected Bitmap doInBackground(Void... voids) {
                         Log.d("TAG", "doInBackground");
                         Bitmap bitmap = createAlbumArt(music.getPath());
-                        music.setBackground(bitmap);
+                        music.setBackgroundType(bitmap);
                         return bitmap;
                     }
 

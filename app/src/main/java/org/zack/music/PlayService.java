@@ -15,7 +15,6 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -27,6 +26,8 @@ import java.util.Random;
 public class PlayService extends Service {
 
 
+    private boolean hadChangeMusic;
+
     private MainCallBack mainCallBack;
     private SetupCallBack setupCallBack;
 
@@ -36,16 +37,13 @@ public class PlayService extends Service {
     private List<Music> musics;
     private boolean random;
     private int cycle;
-    private int background;
+    private int backgroundType;
     private boolean showLyric;
 
-    private Handler handler;
-    private Runnable runnable;
+    private Handler updateUIHandler;
+    private Runnable updateUIRunnable;
 
 
-//    private RemoteViews rv;
-
-//    private LocalBroadcastManager broadcastManager;
     private BroadcastReceiver notificationReceiver;
 
     public static Intent newIntent(Context context) {
@@ -74,7 +72,7 @@ public class PlayService extends Service {
         last = current;
         random = PreferenceUtil.isRandom(this);
         cycle = PreferenceUtil.getCycle(this);
-        background = PreferenceUtil.getBackground(this);
+        backgroundType = PreferenceUtil.getBackgroundType(this);
         showLyric = PreferenceUtil.getShowLyric(this);
 
         mp = new MediaPlayer();
@@ -82,19 +80,28 @@ public class PlayService extends Service {
         mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                if (musics != null && current < musics.size()) {
-//                    changeMusic(musics.get(++current));
+                if (cycle == PreferenceUtil.SINGLE_CYCLE) {
+                    changeMusic(current);
+                } else {
+                    if (random) {
+                        changeMusicRandom();
+                    } else {
+                        changeMusicNext();
+                    }
+                }
+                startPlay();
+/*                if (musics != null && current < musics.size()) {
                     if (cycle == PreferenceUtil.SINGLE_CYCLE) {
                         changeMusic(current);
                     } else {
                         if (random) {
-                            setRandom();
+                            changeMusicRandom();
                         } else {
-                            setNext();
+                            changeMusicNext();
                         }
                     }
                     startPlay();
-                }
+                }*/
             }
         });
 
@@ -121,13 +128,13 @@ public class PlayService extends Service {
 
 
 
-        handler = new Handler();
-        runnable = new Runnable() {
+        updateUIHandler = new Handler();
+        updateUIRunnable = new Runnable() {
             @Override
             public void run() {
                 if (mainCallBack != null) {
-                    mainCallBack.updateTime(mp.getCurrentPosition());
-                    handler.postDelayed(this, 500);
+                    mainCallBack.updateUI(mp.getCurrentPosition());
+                    updateUIHandler.postDelayed(this, 500);
                 }
             }
         };
@@ -146,9 +153,10 @@ public class PlayService extends Service {
         PreferenceUtil.putCurrent(this, current);
         PreferenceUtil.putRandom(this, random);
         PreferenceUtil.putCycle(this, cycle);
-        PreferenceUtil.putBackground(this, background);
+        PreferenceUtil.putBackgroundType(this, backgroundType);
         PreferenceUtil.putShowLyric(this, showLyric);
-        handler.removeCallbacks(runnable);
+
+        updateUIHandler.removeCallbacks(updateUIRunnable);
 
         unregisterReceiver(notificationReceiver);
     }
@@ -163,11 +171,11 @@ public class PlayService extends Service {
                 if (intent != null) {
                     if (intent.getAction().equals(getPackageName() + "PLAY")) {
                         Log.d("TAG", "play");
-                        playBinder.clickPlay();
+                        playBinder.onClickPlay();
                     } else if (intent.getAction().equals(getPackageName() + "NEXT")) {
-                        playBinder.clickNext();
+                        playBinder.onClickNext();
                     } else if (intent.getAction().equals(getPackageName() + "PREVIOUS")) {
-                        playBinder.clickPrevious();
+                        playBinder.onClickPrevious();
                     }
                 }
             }
@@ -179,6 +187,9 @@ public class PlayService extends Service {
 
         registerReceiver(notificationReceiver, filter);
     }
+
+
+
 
 
     private void popNotification(final Music music) {
@@ -243,45 +254,54 @@ public class PlayService extends Service {
 
 
     private void changeMusic(int current) {
-        Music music = musics.get(current);
-        Log.d("TAG", "musicPath = " + music.getPath());
-        if (mainCallBack != null) {
-            mainCallBack.onMusicChange(music);
-            Log.d("TAG", "mainCallBack != null");
-        }
-        try {
-            if (mp == null) {
-                Log.d("TAG", "mp == null");
+        if (musics != null && current < musics.size()) {
+            Music music = musics.get(current);
+            Log.d("TAG", "musicPath = " + music.getPath());
+            if (mainCallBack != null) {
+                mainCallBack.onMusicChange(current, music);
+                Log.d("TAG", "mainCallBack != null");
             }
-            mp.reset();
-            Log.d("TAG", "mp.reset");
-            mp.setDataSource(music.getPath());
-            Log.d("TAG", "mp.changeMusic");
-            mp.prepare();
-            Log.d("TAG", "mp.prepare");
-        } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                if (mp == null) {
+                    Log.d("TAG", "mp == null");
+                }
+                mp.reset();
+                Log.d("TAG", "mp.reset");
+                mp.setDataSource(music.getPath());
+                Log.d("TAG", "mp.changeMusic");
+                mp.prepare();
+                Log.d("TAG", "mp.prepare");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            popNotification(music);
+
+            hadChangeMusic = true;
+
+            return;
         }
 
-        popNotification(music);
+        hadChangeMusic = false;
     }
 
 
     private void startPlay() {
+
         mp.start();
-
-
-        handler.removeCallbacks(runnable);
-        handler.post(runnable);
+        updateUIHandler.removeCallbacks(updateUIRunnable);
+        updateUIHandler.post(updateUIRunnable);
     }
 
     private void pausePlay() {
+
+
         mp.pause();
 
-        handler.removeCallbacks(runnable);
+        updateUIHandler.removeCallbacks(updateUIRunnable);
     }
 
-    private void setNext() {
+    private void changeMusicNext() {
         if (cycle == PreferenceUtil.ALL_CYCLE) {
             last = current;
             if (musics.size() - 1 > current) {
@@ -298,10 +318,52 @@ public class PlayService extends Service {
         }
     }
 
-    private void setRandom() {
+    private void changeMusicPrevious() {
+        current = last;
+        changeMusic(current);
+    }
+
+    private void changeMusicRandom() {
         last = current;
         current = new Random().nextInt(musics.size());
         changeMusic(current);
+    }
+
+
+    private void clickPlay() {
+        if (hadChangeMusic) {
+            if (mp.isPlaying()) {
+                pausePlay();
+            } else {
+                startPlay();
+            }
+
+            if (mainCallBack != null) {
+                mainCallBack.initPlayView(mp.isPlaying());
+            }
+        }
+    }
+
+
+    private void clickNext() {
+
+        boolean isPlaying = mp.isPlaying();
+        if (random) {
+            changeMusicRandom();
+        } else {
+            changeMusicNext();
+        }
+        if (hadChangeMusic && isPlaying) {
+            startPlay();
+        }
+    }
+
+    private void clickPrevious() {
+        boolean isPlaying = mp.isPlaying();
+        changeMusicPrevious();
+        if (hadChangeMusic && isPlaying) {
+            startPlay();
+        }
     }
 
 
@@ -323,47 +385,26 @@ public class PlayService extends Service {
             return cycle;
         }
 
-        public boolean getShowLyric() {
+        public boolean isShowLyric() {
             return showLyric;
         }
 
-        public void clickPlay() {
-            if (musics != null && musics.size() > current) {
-                if (mp.isPlaying()) {
-                    pausePlay();
-                } else {
-                    startPlay();
-                }
-                popNotification(musics.get(current));
-            }
-
-            if (mainCallBack != null) {
-                mainCallBack.initPlayView(mp.isPlaying());
-            }
-
-
+        public void onClickPlay() {
+            clickPlay();
         }
 
-        public void clickNext() {
-            boolean isPlaying = mp.isPlaying();
-            if (musics != null && musics.size() > current) {
-                if (random) {
-                    setRandom();
-                } else {
-                    setNext();
-                }
-            }
-            if (isPlaying) {
-                startPlay();
-            }
+
+
+        public void onClickNext() {
+            clickNext();
         }
 
-        public void clickPrevious() {
-            boolean isPlaying = mp.isPlaying();
+        public void onClickPrevious() {
+            clickPrevious();
+/*            boolean isPlaying = mp.isPlaying();
             if (musics != null && musics.size() > current) {
-//                changeMusic(musics.get(--current));
                 if (random) {
-                    setRandom();
+                    changeMusicRandom();
                 } else {
                     if (cycle == PreferenceUtil.ALL_CYCLE) {
                         last = current;
@@ -383,17 +424,17 @@ public class PlayService extends Service {
             }
             if (isPlaying) {
                 startPlay();
-            }
+            }*/
         }
 
-        public void clickRandom() {
+        public void onClickRandom() {
             random = !random;
             if (mainCallBack != null) {
                 mainCallBack.initRandomView(random);
             }
         }
 
-        public void clickCycle() {
+        public void onClickCycle() {
             if (cycle == PreferenceUtil.NO_CYCLE) {
                 cycle = PreferenceUtil.ALL_CYCLE;
             } else if (cycle == PreferenceUtil.ALL_CYCLE) {
@@ -407,7 +448,7 @@ public class PlayService extends Service {
             }
         }
 
-        public void clickLyric() {
+        public void onClickLyric() {
             showLyric = !showLyric;
             if (mainCallBack != null) {
                 mainCallBack.initShowLyric(showLyric);
@@ -416,7 +457,7 @@ public class PlayService extends Service {
 
         public void onStartTrackingTouch() {
             if (musics != null && musics.size() > current) {
-                handler.removeCallbacks(runnable);
+                updateUIHandler.removeCallbacks(updateUIRunnable);
             }
         }
 
@@ -424,12 +465,12 @@ public class PlayService extends Service {
             if (musics != null && musics.size() > current) {
                 mp.seekTo(progress * 1000);
                 if (mp.isPlaying()) {
-                    handler.post(runnable);
+                    updateUIHandler.post(updateUIRunnable);
                 }
             }
         }
 
-        public void clickPosition(int position) {
+        public void onItemClickPosition(int position) {
             if (musics != null && musics.size() > position) {
                 boolean isPlaying = mp.isPlaying();
                 last = current;
@@ -444,7 +485,7 @@ public class PlayService extends Service {
 
         public void initMusicList() {
 
-            final Handler handler = new Handler(new Handler.Callback() {
+/*            final Handler handler = new Handler(new Handler.Callback() {
                 @Override
                 public boolean handleMessage(Message msg) {
                     if (msg.what == 0 && musics != null && musics.size() > current) {
@@ -455,16 +496,27 @@ public class PlayService extends Service {
                     }
                     return false;
                 }
-            });
-
+            });*/
+            final Handler handler = new Handler();
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     if (musics == null) {
                         musics = Music.getMusicList(PlayService.this);
-                        Message msg = new Message();
-                        msg.what = 0;
-                        handler.sendMessage(msg);
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (musics != null && musics.size() > current) {
+                                    if (mainCallBack != null) {
+                                        mainCallBack.setMusics(musics);
+                                    }
+                                }
+                                changeMusic(current);
+                            }
+                        });
+//                        Message msg = new Message();
+//                        msg.what = 0;
+//                        handler.sendMessage(msg);
                     }
                 }
             }).start();
@@ -497,21 +549,21 @@ public class PlayService extends Service {
             return PlayService.this.mainCallBack;
         }
 
-        public int getBackground() {
-            return background;
+        public int getBackgroundType() {
+            return backgroundType;
         }
 
         public void popServiceNotification() {
             popNotification(musics.get(current));
         }
 
-        public void setBackground(int background) {
-            PlayService.this.background = background;
+        public void setBackgroundType(int background) {
+            PlayService.this.backgroundType = background;
             if (setupCallBack != null) {
-                setupCallBack.onBackgroundChange(PlayService.this.background);
+                setupCallBack.onBackgroundChange(PlayService.this.backgroundType);
             }
             if (mainCallBack != null) {
-                mainCallBack.onBackgroundTypeChange(PlayService.this.background);
+                mainCallBack.onBackgroundTypeChange(PlayService.this.backgroundType);
             }
 
         }
@@ -523,12 +575,12 @@ public class PlayService extends Service {
 
 
     public interface MainCallBack {
-        void onMusicChange(Music music);
+        void onMusicChange(int position, Music music);
         void initPlayView(boolean isPlaying);
         void initCycleView(int cycle);
         void initRandomView(boolean random);
         void initShowLyric(boolean showLyric);
-        void updateTime(int time);
+        void updateUI(int time);
         void setMusics(List<Music> musics);
         void onBackgroundTypeChange(int background);
     }

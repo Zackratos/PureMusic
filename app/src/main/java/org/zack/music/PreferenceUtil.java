@@ -50,12 +50,12 @@ public class PreferenceUtil {
         getEditor(context).putInt("cycle", cycle).apply();
     }
 
-    public static int getBackground(Context context) {
-        return getPreferences(context).getInt("background", GIRL_BACKGROUND);
+    public static int getBackgroundType(Context context) {
+        return getPreferences(context).getInt("backgroundType", GIRL_BACKGROUND);
     }
 
-    public static void putBackground(Context context, int background) {
-        getEditor(context).putInt("background", background).apply();
+    public static void putBackgroundType(Context context, int background) {
+        getEditor(context).putInt("backgroundType", background).apply();
     }
 
     public static boolean getShowLyric(Context context) {

@@ -133,7 +133,7 @@ public class Music {
                         String path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
                         String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
                         String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
-                        Music music = new Music.MusicBuilder()
+                        Music music = new MusicBuilder()
                                 .title(title)
                                 .album(album)
                                 .path(path)

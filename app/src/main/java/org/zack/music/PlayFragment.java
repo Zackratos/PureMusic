@@ -16,7 +16,7 @@ import java.io.File;
 public class PlayFragment extends Fragment implements View.OnClickListener, View.OnLongClickListener {
 
 
-    private MainMiddleListener listener;
+    private PlayCallBack callBack;
 
 
     private ImageView playView;
@@ -61,32 +61,32 @@ public class PlayFragment extends Fragment implements View.OnClickListener, View
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.middle_play:
-                if (listener != null) {
-                    listener.clickPlay();
+                if (callBack != null) {
+                    callBack.onClickPlay();
                 }
                 break;
 
             case R.id.middle_next:
-                if (listener != null) {
-                    listener.clickNext();
+                if (callBack != null) {
+                    callBack.onClickNext();
                 }
                 break;
 
             case R.id.middle_previous:
-                if (listener != null) {
-                    listener.clickPrevious();
+                if (callBack != null) {
+                    callBack.onClickPrevious();
                 }
                 break;
 
             case R.id.middle_cycle:
-                if (listener != null) {
-                    listener.clickCycle();
+                if (callBack != null) {
+                    callBack.onClickCycle();
                 }
                 break;
 
             case R.id.middle_random:
-                if (listener != null) {
-                    listener.clickRandom();
+                if (callBack != null) {
+                    callBack.onClickRandom();
                 }
                 break;
             default:
@@ -134,12 +134,12 @@ public class PlayFragment extends Fragment implements View.OnClickListener, View
 
             @Override
             public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
-                listener.onStartTrackingTouch();
+                callBack.onStartTrackingTouch();
             }
 
             @Override
             public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
-                listener.onStopTrackingTouch(seekBar.getProgress());
+                callBack.onStopTrackingTouch(seekBar.getProgress());
             }
         });
 
@@ -156,12 +156,12 @@ public class PlayFragment extends Fragment implements View.OnClickListener, View
 
             @Override
             public void onStopTrackingTouch(CircularSeekBar seekBar) {
-                listener.onStopTrackingTouch(seekBar.getProgress());
+                callBack.onStopTrackingTouch(seekBar.getProgress());
             }
 
             @Override
             public void onStartTrackingTouch(CircularSeekBar seekBar) {
-                listener.onStartTrackingTouch();
+                callBack.onStartTrackingTouch();
             }
         });
 
@@ -169,17 +169,17 @@ public class PlayFragment extends Fragment implements View.OnClickListener, View
         return view;
     }
 
-    interface MainMiddleListener {
+    interface PlayCallBack {
 
-        void clickPlay();
+        void onClickPlay();
 
-        void clickNext();
+        void onClickNext();
 
-        void clickPrevious();
+        void onClickPrevious();
 
-        void clickRandom();
+        void onClickRandom();
 
-        void clickCycle();
+        void onClickCycle();
 
         void onStartTrackingTouch();
 
@@ -187,8 +187,8 @@ public class PlayFragment extends Fragment implements View.OnClickListener, View
 
     }
 
-    public void setMainMiddleListener(MainMiddleListener listener) {
-        this.listener = listener;
+    public void setPlayCallBack(PlayCallBack callBack) {
+        this.callBack = callBack;
     }
 
 

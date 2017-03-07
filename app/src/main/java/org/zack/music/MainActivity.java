@@ -41,7 +41,7 @@ public class MainActivity extends BaseActivity {
     private ServiceConnection connection;
     private PlayService.PlayBinder playBinder;
 
-    private PlayFragment mmFragment;
+    private PlayFragment playFragment;
     private MusicListFragment mlFragment;
 
     private ImageView backgroundView;
@@ -85,7 +85,7 @@ public class MainActivity extends BaseActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         lyricItem = menu.findItem(R.id.menu_lyric);
         if (playBinder != null) {
-            initLyricItem(playBinder.getShowLyric());
+            initLyricItem(playBinder.isShowLyric());
         }
         return super.onPrepareOptionsMenu(menu);
     }
@@ -101,7 +101,7 @@ public class MainActivity extends BaseActivity {
         if (item.getItemId() == R.id.menu_setup) {
             startActivity(SetupActivity.newIntent(this));
         } else if (item.getItemId() == R.id.menu_lyric) {
-            playBinder.clickLyric();
+            playBinder.onClickLyric();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -142,33 +142,33 @@ public class MainActivity extends BaseActivity {
 
 //        dl = (DrawerLayout) findViewById(R.id.main_drawer);
         FragmentManager fm = getSupportFragmentManager();
-        mmFragment = PlayFragment.newInstance();
+        playFragment = PlayFragment.newInstance();
         mlFragment = MusicListFragment.newInstance();
-        mmFragment.setMainMiddleListener(new PlayFragment.MainMiddleListener() {
+        playFragment.setPlayCallBack(new PlayFragment.PlayCallBack() {
 
             @Override
-            public void clickPlay() {
-                playBinder.clickPlay();
+            public void onClickPlay() {
+                playBinder.onClickPlay();
             }
 
             @Override
-            public void clickNext() {
-                playBinder.clickNext();
+            public void onClickNext() {
+                playBinder.onClickNext();
             }
 
             @Override
-            public void clickPrevious() {
-                playBinder.clickPrevious();
+            public void onClickPrevious() {
+                playBinder.onClickPrevious();
             }
 
             @Override
-            public void clickRandom() {
-                playBinder.clickRandom();
+            public void onClickRandom() {
+                playBinder.onClickRandom();
             }
 
             @Override
-            public void clickCycle() {
-                playBinder.clickCycle();
+            public void onClickCycle() {
+                playBinder.onClickCycle();
             }
 
             @Override
@@ -186,14 +186,14 @@ public class MainActivity extends BaseActivity {
         mlFragment.setMainLeftListener(new MusicListFragment.MainLeftListener() {
             @Override
             public void clickPosition(int position) {
-                playBinder.clickPosition(position);
+                playBinder.onItemClickPosition(position);
                 dl.closeDrawer(Gravity.LEFT, true);
-//                mmFragment.clickPosition(position);
+//                playFragment.onItemClickPosition(position);
             }
         });
 
         FragmentTransaction ft = fm.beginTransaction();
-        ft.add(R.id.main_middle, mmFragment);
+        ft.add(R.id.main_middle, playFragment);
         ft.add(R.id.main_left, mlFragment);
         ft.commit();
 
@@ -250,10 +250,10 @@ public class MainActivity extends BaseActivity {
     }
 
 
-    private void setBackground(int background, String path) {
-        if (background == PreferenceUtil.TRAN_BACKGROUND) {
+    private void setBackground(int backgroundType, String path) {
+        if (backgroundType == PreferenceUtil.TRAN_BACKGROUND) {
             setBackgroundTran();
-        } else if (background == PreferenceUtil.GIRL_BACKGROUND) {
+        } else if (backgroundType == PreferenceUtil.GIRL_BACKGROUND) {
             setBackgroundGirl(new Random().nextInt(10));
         } else {
             setBackgroundInn(path);
@@ -275,40 +275,40 @@ public class MainActivity extends BaseActivity {
 
                 playBinder.setMainCallBack(new PlayService.MainCallBack() {
                     @Override
-                    public void onMusicChange(Music music) {
-                        mmFragment.setDuration(music.getDuration());
+                    public void onMusicChange(int position, Music music) {
+                        playFragment.setDuration(music.getDuration());
                         setTitle(TextUtils.isEmpty(music.getTitle()) ? music.getName() : music.getTitle());
-                        setBackground(playBinder.getBackground(), music.getPath());
-                        mmFragment.initLyricView(music.getPath().replace(".mp3", ".lrc").replace(".wma", ".lrc"));
-                        mlFragment.initRecyclerViewPosition(playBinder.getCurrent());
-                        mlFragment.initRecyclerViewItemDisplay(playBinder.getCurrent(), playBinder.getLast());
+                        setBackground(playBinder.getBackgroundType(), music.getPath());
+                        playFragment.initLyricView(music.getPath().replace(".mp3", ".lrc").replace(".wma", ".lrc"));
+                        mlFragment.initRecyclerViewPosition(position);
+                        mlFragment.initRecyclerViewItemDisplay(position, playBinder.getLast());
                     }
 
                     @Override
                     public void initPlayView(boolean isPlaying) {
-                        mmFragment.initPlayView(isPlaying);
+                        playFragment.initPlayView(isPlaying);
                     }
 
                     @Override
                     public void initCycleView(int cycle) {
-                        mmFragment.initCycleView(cycle);
+                        playFragment.initCycleView(cycle);
                     }
 
                     @Override
                     public void initRandomView(boolean random) {
-                        mmFragment.initRandomView(random);
+                        playFragment.initRandomView(random);
                     }
 
                     @Override
                     public void initShowLyric(boolean showLyric) {
-                        mmFragment.initShowLyric(showLyric);
+                        playFragment.initShowLyric(showLyric);
 //                        lyricItem.setIcon(showLyric ? R.drawable.lyric_icon_on : R.drawable.lyric_icon_off);
                         initLyricItem(showLyric);
                     }
 
                     @Override
-                    public void updateTime(int time) {
-                        mmFragment.updateTime(time);
+                    public void updateUI(int time) {
+                        playFragment.updateTime(time);
                     }
 
                     @Override
@@ -328,22 +328,22 @@ public class MainActivity extends BaseActivity {
 
                 if (musics == null) {
                     playBinder.initMusicList();
-                    mmFragment.initRandomView(playBinder.isRandom());
-                    mmFragment.initCycleView(playBinder.getCycle());
-                    mmFragment.initShowLyric(playBinder.getShowLyric());
-                    initLyricItem(playBinder.getShowLyric());
+                    playFragment.initRandomView(playBinder.isRandom());
+                    playFragment.initCycleView(playBinder.getCycle());
+                    playFragment.initShowLyric(playBinder.isShowLyric());
+                    initLyricItem(playBinder.isShowLyric());
                 } else {
                     Music music = playBinder.getCurrentMusic();
-                    mmFragment.setDuration(music.getDuration());
+                    playFragment.setDuration(music.getDuration());
                     setTitle(TextUtils.isEmpty(music.getTitle()) ? music.getName() : music.getTitle());
-                    setBackground(playBinder.getBackground(), music.getPath());
+                    setBackground(playBinder.getBackgroundType(), music.getPath());
 
-                    mmFragment.initPlayView(playBinder.isPlaying());
-                    mmFragment.initRandomView(playBinder.isRandom());
-                    mmFragment.initCycleView(playBinder.getCycle());
-                    mmFragment.initShowLyric(playBinder.getShowLyric());
-                    initLyricItem(playBinder.getShowLyric());
-                    mmFragment.initLyricView(music.getPath().replace(".mp3", ".lrc").replace(".wma", ".lrc"));
+                    playFragment.initPlayView(playBinder.isPlaying());
+                    playFragment.initRandomView(playBinder.isRandom());
+                    playFragment.initCycleView(playBinder.getCycle());
+                    playFragment.initShowLyric(playBinder.isShowLyric());
+                    initLyricItem(playBinder.isShowLyric());
+                    playFragment.initLyricView(music.getPath().replace(".mp3", ".lrc").replace(".wma", ".lrc"));
                     mlFragment.setMusics(musics);
                     mlFragment.initRecyclerViewPosition(playBinder.getCurrent());
                     mlFragment.initRecyclerViewItemDisplay(playBinder.getCurrent(), playBinder.getLast());
