@@ -1,28 +1,22 @@
 package org.zack.music;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -56,8 +50,7 @@ public class MainActivity extends BaseActivity {
 
 
     public static Intent newIntent(Context context) {
-        Intent intent = new Intent(context, MainActivity.class);
-        return intent;
+        return new Intent(context, MainActivity.class);
     }
 
 
@@ -74,14 +67,6 @@ public class MainActivity extends BaseActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             requestRunTimePermission(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE});
         }
-/*        if (ContextCompat.checkSelfPermission(this, Manifest.permission.
-                READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]
-                    {Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-        } else {
-            hasBindService = bindService(PlayService.newIntent(this), connection, BIND_AUTO_CREATE);
-            startService(PlayService.newIntent(this));
-        }*/
     }
 
 
@@ -139,22 +124,11 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-/*    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == 1) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                hasBindService = bindService(PlayService.newIntent(this), connection, BIND_AUTO_CREATE);
-                startService(PlayService.newIntent(this));
-            } else {
-                finish();
-            }
-        }
-    }*/
 
     private void initView() {
         FrameLayout decorView = (FrameLayout) getWindow().getDecorView();
         backgroundView = new ImageView(this);
-//        backgroundView.setImageResource(R.drawable.background_1);
+
         DrawerLayout.LayoutParams params = new DrawerLayout.LayoutParams
                 (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         backgroundView.setLayoutParams(params);

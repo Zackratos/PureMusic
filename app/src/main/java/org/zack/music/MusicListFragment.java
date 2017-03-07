@@ -169,7 +169,7 @@ public class MusicListFragment extends Fragment {
             albumView.setText(music.getAlbum());
             artistView.setText(music.getArtist());
             playingView.setVisibility(position == current ? View.VISIBLE : View.INVISIBLE);
-            new Thread(new Runnable() {
+/*            new Thread(new Runnable() {
                 @Override
                 public void run() {
                     final byte[] iconByte = Music.getAlbumByte(music.getPath());
@@ -183,7 +183,7 @@ public class MusicListFragment extends Fragment {
                         }
                     });
                 }
-            }).start();
+            }).start();*/
 //            Glide.with(MusicListFragment.this).load(Music.getAlbumByte(music.getPath())).into(iconView);
 //            Bitmap icon = music.getImage();
 
