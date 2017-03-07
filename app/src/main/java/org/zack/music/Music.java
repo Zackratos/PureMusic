@@ -91,6 +91,13 @@ public class Music {
     }
 
 
+    public static byte[] getAlbumByte(String filePath) {
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(filePath);
+        return retriever.getEmbeddedPicture();
+    }
+
+
     public static Bitmap createAlbumArt(String filePath) {
         Bitmap bitmap = null;
         //能够获取多媒体文件元数据的类

@@ -1,6 +1,7 @@
 package org.zack.music;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -161,12 +164,27 @@ public class MusicListFragment extends Fragment {
         }
 
         public void initView(final int position) {
-            Music music = musics.get(position);
+            final Music music = musics.get(position);
             titleView.setText(!TextUtils.isEmpty(music.getTitle()) ? music.getTitle() : music.getName());
             albumView.setText(music.getAlbum());
             artistView.setText(music.getArtist());
             playingView.setVisibility(position == current ? View.VISIBLE : View.INVISIBLE);
-
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    final byte[] iconByte = Music.getAlbumByte(music.getPath());
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Glide.with(MusicListFragment.this)
+                                    .load(iconByte)
+                                    .placeholder(R.drawable.album_icon)
+                                    .into(iconView);
+                        }
+                    });
+                }
+            }).start();
+//            Glide.with(MusicListFragment.this).load(Music.getAlbumByte(music.getPath())).into(iconView);
 //            Bitmap icon = music.getImage();
 
 //            backgroundView.setImageBitmap(background == null ?
