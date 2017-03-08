@@ -203,23 +203,27 @@ public class MainActivity extends BaseActivity {
     }
 
     private void setBackgroundInn(final String path) {
-        final Handler handler = new Handler(new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message message) {
-                backgroundView.setImageBitmap((Bitmap)message.obj);
-                return false;
-            }
-        });
+        if (path != null) {
+            final Handler handler = new Handler(new Handler.Callback() {
+                @Override
+                public boolean handleMessage(Message message) {
+                    backgroundView.setImageBitmap((Bitmap) message.obj);
+                    return false;
+                }
+            });
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Bitmap bitmap = Music.createAlbumArt(path);
-                Message msg = handler.obtainMessage();
-                msg.obj = bitmap;
-                handler.sendMessage(msg);
-            }
-        }).start();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Bitmap bitmap = Music.createAlbumArt(path);
+                    Message msg = handler.obtainMessage();
+                    msg.obj = bitmap;
+                    handler.sendMessage(msg);
+                }
+            }).start();
+        } else {
+            setBackgroundTran();
+        }
 
     }
 
@@ -275,13 +279,13 @@ public class MainActivity extends BaseActivity {
 
                 playBinder.setMainCallBack(new PlayService.MainCallBack() {
                     @Override
-                    public void onMusicChange(int position, Music music) {
+                    public void onMusicChange(int current, Music music, int last, int backgroundType) {
                         playFragment.setDuration(music.getDuration());
                         setTitle(TextUtils.isEmpty(music.getTitle()) ? music.getName() : music.getTitle());
-                        setBackground(playBinder.getBackgroundType(), music.getPath());
+                        setBackground(backgroundType, music.getPath());
                         playFragment.initLyricView(music.getPath().replace(".mp3", ".lrc").replace(".wma", ".lrc"));
-                        mlFragment.initRecyclerViewPosition(position);
-                        mlFragment.initRecyclerViewItemDisplay(position, playBinder.getLast());
+                        mlFragment.initRecyclerViewPosition(current);
+                        mlFragment.initRecyclerViewItemDisplay(current, last);
                     }
 
                     @Override
@@ -308,7 +312,7 @@ public class MainActivity extends BaseActivity {
 
                     @Override
                     public void updateUI(int time) {
-                        playFragment.updateTime(time);
+                        playFragment.updateUI(time);
                     }
 
                     @Override
@@ -317,14 +321,16 @@ public class MainActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onBackgroundTypeChange(int background) {
-                        if (playBinder.getCurrentMusic() != null) {
-                            setBackground(background, playBinder.getCurrentMusic().getPath());
-                        }
+                    public void onBackgroundTypeChange(int backgroundType, String path) {
+                        setBackground(backgroundType, path);
+/*                        if (playBinder.getCurrentMusic() != null) {
+                            setBackground(backgroundType, playBinder.getCurrentMusic().getPath());
+                        }*/
                     }
                 });
 
-                List<Music> musics = playBinder.getMusicList();
+
+/*                List<Music> musics = playBinder.getMusicList();
 
                 if (musics == null) {
                     playBinder.initMusicList();
@@ -347,7 +353,7 @@ public class MainActivity extends BaseActivity {
                     mlFragment.setMusics(musics);
                     mlFragment.initRecyclerViewPosition(playBinder.getCurrent());
                     mlFragment.initRecyclerViewItemDisplay(playBinder.getCurrent(), playBinder.getLast());
-                }
+                }*/
 
             }
 

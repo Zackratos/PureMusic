@@ -211,11 +211,12 @@ public class PlayFragment extends Fragment implements View.OnClickListener, View
 
 
     public void initPlayView(boolean isPlaying) {
-        if (isPlaying) {
+/*        if (isPlaying) {
             playView.setImageResource(R.drawable.pause_icon);
         } else {
             playView.setImageResource(R.drawable.play_icon);
-        }
+        }*/
+        playView.setImageResource(isPlaying ? R.drawable.pause_icon : R.drawable.play_icon);
     }
 
     public void initCycleView(int cycle) {
@@ -252,7 +253,7 @@ public class PlayFragment extends Fragment implements View.OnClickListener, View
         }
     }
 
-    public void updateTime(int time) {
+    public void updateUI(int time) {
         int durationSecond = getDurationSecond(time);
         String durationText = getDurationText(durationSecond);
 //        currentView.setText(durationText);

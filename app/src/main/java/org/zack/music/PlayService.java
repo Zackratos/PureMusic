@@ -26,7 +26,7 @@ import java.util.Random;
 public class PlayService extends Service {
 
 
-    private boolean hadChangeMusic;
+    private boolean hadLoadMusics;
 
     private MainCallBack mainCallBack;
     private SetupCallBack setupCallBack;
@@ -47,8 +47,7 @@ public class PlayService extends Service {
     private BroadcastReceiver notificationReceiver;
 
     public static Intent newIntent(Context context) {
-        Intent intent = new Intent(context, PlayService.class);
-        return intent;
+        return new Intent(context, PlayService.class);
     }
 
     public PlayService() {
@@ -81,7 +80,7 @@ public class PlayService extends Service {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 if (cycle == PreferenceUtil.SINGLE_CYCLE) {
-                    changeMusic(current);
+                    changeMusic();
                 } else {
                     if (random) {
                         changeMusicRandom();
@@ -253,12 +252,12 @@ public class PlayService extends Service {
     }
 
 
-    private void changeMusic(int current) {
-        if (musics != null && current < musics.size()) {
+    private void changeMusic() {
+        if (hadLoadMusics) {
             Music music = musics.get(current);
             Log.d("TAG", "musicPath = " + music.getPath());
             if (mainCallBack != null) {
-                mainCallBack.onMusicChange(current, music);
+                mainCallBack.onMusicChange(current, music, last, backgroundType);
                 Log.d("TAG", "mainCallBack != null");
             }
             try {
@@ -277,12 +276,11 @@ public class PlayService extends Service {
 
             popNotification(music);
 
-            hadChangeMusic = true;
+//            hadLoadMusics = true;
 
-            return;
         }
 
-        hadChangeMusic = false;
+//        hadLoadMusics = false;
     }
 
 
@@ -309,29 +307,32 @@ public class PlayService extends Service {
             } else {
                 current = 0;
             }
-            changeMusic(current);
+            changeMusic();
         } else {
             if (musics.size() - 1 > current) {
                 last = current;
-                changeMusic(++current);
+                current++;
+                changeMusic();
             }
         }
     }
 
     private void changeMusicPrevious() {
+        int temp = current;
         current = last;
-        changeMusic(current);
+        last = temp;
+        changeMusic();
     }
 
     private void changeMusicRandom() {
         last = current;
         current = new Random().nextInt(musics.size());
-        changeMusic(current);
+        changeMusic();
     }
 
 
     private void clickPlay() {
-        if (hadChangeMusic) {
+        if (hadLoadMusics) {
             if (mp.isPlaying()) {
                 pausePlay();
             } else {
@@ -347,13 +348,14 @@ public class PlayService extends Service {
 
     private void clickNext() {
 
+//        startPlay();
         boolean isPlaying = mp.isPlaying();
         if (random) {
             changeMusicRandom();
         } else {
             changeMusicNext();
         }
-        if (hadChangeMusic && isPlaying) {
+        if (isPlaying) {
             startPlay();
         }
     }
@@ -361,7 +363,7 @@ public class PlayService extends Service {
     private void clickPrevious() {
         boolean isPlaying = mp.isPlaying();
         changeMusicPrevious();
-        if (hadChangeMusic && isPlaying) {
+        if (isPlaying) {
             startPlay();
         }
     }
@@ -371,6 +373,10 @@ public class PlayService extends Service {
 
         public PlayService getPlayService() {
             return PlayService.this;
+        }
+
+        public boolean hadLoadMusics() {
+            return hadLoadMusics;
         }
 
         public boolean isPlaying() {
@@ -475,7 +481,7 @@ public class PlayService extends Service {
                 boolean isPlaying = mp.isPlaying();
                 last = current;
                 current = position;
-                changeMusic(current);
+                changeMusic();
                 if (isPlaying) {
                     startPlay();
                 }
@@ -507,11 +513,12 @@ public class PlayService extends Service {
                             @Override
                             public void run() {
                                 if (musics != null && musics.size() > current) {
+                                    hadLoadMusics = true;
                                     if (mainCallBack != null) {
                                         mainCallBack.setMusics(musics);
                                     }
                                 }
-                                changeMusic(current);
+                                changeMusic();
                             }
                         });
 //                        Message msg = new Message();
@@ -563,7 +570,11 @@ public class PlayService extends Service {
                 setupCallBack.onBackgroundChange(PlayService.this.backgroundType);
             }
             if (mainCallBack != null) {
-                mainCallBack.onBackgroundTypeChange(PlayService.this.backgroundType);
+                String path = null;
+                if (musics != null && musics.size() > current) {
+                    path = musics.get(current).getPath();
+                }
+                mainCallBack.onBackgroundTypeChange(PlayService.this.backgroundType, path);
             }
 
         }
@@ -575,14 +586,14 @@ public class PlayService extends Service {
 
 
     public interface MainCallBack {
-        void onMusicChange(int position, Music music);
+        void onMusicChange(int position, Music music, int last, int backgroundType);
         void initPlayView(boolean isPlaying);
         void initCycleView(int cycle);
         void initRandomView(boolean random);
         void initShowLyric(boolean showLyric);
         void updateUI(int time);
         void setMusics(List<Music> musics);
-        void onBackgroundTypeChange(int background);
+        void onBackgroundTypeChange(int backgroundType, String path);
     }
 
     public interface SetupCallBack {
