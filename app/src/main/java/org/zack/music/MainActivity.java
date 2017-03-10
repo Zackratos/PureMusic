@@ -329,6 +329,19 @@ public class MainActivity extends BaseActivity {
                     }
                 });
 
+                if (playBinder.isRunning()) {
+                    Music music = playBinder.getCurrentMusic();
+                    if (music != null) {
+
+                    }
+                } else {
+                    playBinder.setRunning(true);
+                    playBinder.initMusicList();
+                    playFragment.initRandomView(playBinder.isRandom());
+                    playFragment.initCycleView(playBinder.getCycle());
+                    playFragment.initShowLyric(playBinder.isShowLyric());
+                    initLyricItem(playBinder.isShowLyric());
+                }
 
 /*                List<Music> musics = playBinder.getMusicList();
 

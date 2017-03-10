@@ -26,6 +26,7 @@ import java.util.Random;
 public class PlayService extends Service {
 
 
+    private boolean running;
     private boolean hadLoadMusics;
 
     private MainCallBack mainCallBack;
@@ -63,10 +64,14 @@ public class PlayService extends Service {
         return playBinder;
     }
 
+
+
+
     @Override
     public void onCreate() {
 
         super.onCreate();
+
         current = PreferenceUtil.getCurrent(this);
         last = current;
         random = PreferenceUtil.isRandom(this);
@@ -373,6 +378,14 @@ public class PlayService extends Service {
 
         public PlayService getPlayService() {
             return PlayService.this;
+        }
+
+        public boolean isRunning() {
+            return running;
+        }
+
+        public void setRunning(boolean running) {
+            PlayService.this.running = running;
         }
 
         public boolean hadLoadMusics() {
