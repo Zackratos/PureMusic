@@ -20,6 +20,7 @@ public class Music {
     private String album;
     private String artist;
     private String path;
+    private byte[] model;
 //    private Bitmap image;
     private long duration;
 
@@ -29,6 +30,7 @@ public class Music {
         album = builder.album;
         artist = builder.artist;
         path = builder.path;
+        model = builder.model;
 //        image = builder.image;
         duration = builder.duration;
     }
@@ -41,7 +43,15 @@ public class Music {
         this.path = path;
     }
 
-/*    public Bitmap getImage() {
+    public byte[] getModel() {
+        return model;
+    }
+
+    public void setModel(byte[] model) {
+        this.model = model;
+    }
+
+    /*    public Bitmap getImage() {
         return image;
     }
 
@@ -92,9 +102,23 @@ public class Music {
 
 
     public static byte[] getAlbumByte(String filePath) {
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(filePath);
-        return retriever.getEmbeddedPicture();
+        if (filePath != null) {
+            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+            try {
+                retriever.setDataSource(filePath);
+                return retriever.getEmbeddedPicture();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    retriever.release();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+        return null;
     }
 
 
@@ -160,6 +184,7 @@ public class Music {
         private String album;
         private String artist;
         private String path;
+        private byte[] model;
 //        private Bitmap image;
         private long duration;
 
@@ -188,6 +213,11 @@ public class Music {
             return this;
         }
 
+
+        public MusicBuilder model(byte[] model) {
+            this.model = model;
+            return this;
+        }
 /*        public MusicBuilder image(Bitmap image) {
             this.image = image;
             return this;

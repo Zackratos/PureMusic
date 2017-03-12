@@ -26,6 +26,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 import java.util.Random;
 
@@ -38,6 +40,8 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
+
+    private boolean hadBind;
     private ServiceConnection connection;
     private PlayService.PlayBinder playBinder;
 
@@ -72,7 +76,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void grantedPermission() {
-        bindService(PlayService.newIntent(this), connection, BIND_AUTO_CREATE);
+        hadBind = bindService(PlayService.newIntent(this), connection, BIND_AUTO_CREATE);
         startService(PlayService.newIntent(this));
     }
 
@@ -118,7 +122,9 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(connection);
+        if (hadBind) {
+            unbindService(connection);
+        }
         if (playBinder != null && !playBinder.isPlaying()) {
             stopService(PlayService.newIntent(this));
         }
@@ -203,8 +209,23 @@ public class MainActivity extends BaseActivity {
     }
 
     private void setBackgroundInn(final String path) {
-        if (path != null) {
-            final Handler handler = new Handler(new Handler.Callback() {
+            final Handler handler = new Handler();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    final byte[] model = Music.getAlbumByte(path);
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Glide.with(MainActivity.this)
+                                    .load(model)
+                                    .into(backgroundView);
+                        }
+                    });
+                }
+            }).start();
+/*            final Handler handler = new Handler(new Handler.Callback() {
                 @Override
                 public boolean handleMessage(Message message) {
                     backgroundView.setImageBitmap((Bitmap) message.obj);
@@ -220,15 +241,17 @@ public class MainActivity extends BaseActivity {
                     msg.obj = bitmap;
                     handler.sendMessage(msg);
                 }
-            }).start();
-        } else {
-            setBackgroundTran();
-        }
-
+            }).start();*/
     }
 
     private void setBackgroundGirl(final int random) {
-        final Handler handler = new Handler(new Handler.Callback() {
+
+        Glide.with(MainActivity.this)
+                .load(getResources().getIdentifier
+                        ("background_" + random, "drawable", getPackageName()))
+                .into(backgroundView);
+
+/*        final Handler handler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
                 backgroundView.setImageDrawable((Drawable) msg.obj);
@@ -245,7 +268,7 @@ public class MainActivity extends BaseActivity {
                 msg.obj = drawable;
                 handler.sendMessage(msg);
             }
-        }).start();
+        }).start();*/
 
     }
 
@@ -332,21 +355,35 @@ public class MainActivity extends BaseActivity {
                 if (playBinder.isRunning()) {
                     Music music = playBinder.getCurrentMusic();
                     if (music != null) {
-
+                        playFragment.setDuration(music.getDuration());
+                        setTitle(TextUtils.isEmpty(music.getTitle()) ? music.getName() : music.getTitle());
+                        setBackground(playBinder.getBackgroundType(), music.getPath());
+                        playFragment.initLyricView(music.getPath().replace(".mp3", ".lrc").replace(".wma", ".lrc"));
                     }
+                    playFragment.initPlayView(playBinder.isPlaying());
+                    initInterface();
+//                    playFragment.initRandomView(playBinder.isRandom());
+//                    playFragment.initCycleView(playBinder.getCycle());
+//                    playFragment.initShowLyric(playBinder.isShowLyric());
+//                    initLyricItem(playBinder.isShowLyric());
+
+                    mlFragment.setMusics(playBinder.getMusicList());
+                    mlFragment.initRecyclerViewPosition(playBinder.getCurrent());
+                    mlFragment.initRecyclerViewItemDisplay(playBinder.getCurrent(), playBinder.getLast());
                 } else {
                     playBinder.setRunning(true);
-                    playBinder.initMusicList();
-                    playFragment.initRandomView(playBinder.isRandom());
-                    playFragment.initCycleView(playBinder.getCycle());
-                    playFragment.initShowLyric(playBinder.isShowLyric());
-                    initLyricItem(playBinder.isShowLyric());
+                    playBinder.onInitMusicList();
+                    initInterface();
+//                    playFragment.initRandomView(playBinder.isRandom());
+//                    playFragment.initCycleView(playBinder.getCycle());
+//                    playFragment.initShowLyric(playBinder.isShowLyric());
+//                    initLyricItem(playBinder.isShowLyric());
                 }
 
 /*                List<Music> musics = playBinder.getMusicList();
 
                 if (musics == null) {
-                    playBinder.initMusicList();
+                    playBinder.onInitMusicList();
                     playFragment.initRandomView(playBinder.isRandom());
                     playFragment.initCycleView(playBinder.getCycle());
                     playFragment.initShowLyric(playBinder.isShowLyric());
@@ -376,5 +413,14 @@ public class MainActivity extends BaseActivity {
             }
         };
 
+    }
+
+
+
+    private void initInterface() {
+        playFragment.initRandomView(playBinder.isRandom());
+        playFragment.initCycleView(playBinder.getCycle());
+        playFragment.initShowLyric(playBinder.isShowLyric());
+        initLyricItem(playBinder.isShowLyric());
     }
 }

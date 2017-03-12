@@ -14,6 +14,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
 
 
 /**
@@ -21,16 +27,42 @@ import android.widget.CompoundButton;
  * Use the {@link SetupFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SetupFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class SetupFragment extends Fragment {
 
 
-    private View tranWhole, girlWhole, innWhole;
-    private SwitchCompat tranSwitch, girlSwitch, innSwitch;
+//    private View tranWhole, girlWhole, innWhole;
+//    private SwitchCompat tranSwitch, girlSwitch, innSwitch;
+
+    @BindView(R.id.setup_background_group)
+    RadioGroup backgroundGroup;
+
+    @BindView(R.id.setup_trans)
+    RadioButton transButton;
+
+    @BindView(R.id.setup_girl)
+    RadioButton girlButton;
+
+    @BindView(R.id.setup_inn)
+    RadioButton innButton;
+
+
+/*    @OnCheckedChanged(R.id.setup_background_group)
+    void onBackgroundChange(int i) {
+        if (i == 0) {
+            playBinder.setBackgroundType(PreferenceUtil.TRAN_BACKGROUND);
+        } else if (i == 1) {
+            playBinder.setBackgroundType(PreferenceUtil.GIRL_BACKGROUND);
+        } else {
+            playBinder.setBackgroundType(PreferenceUtil.INN_BACKGROUND);
+        }
+    }*/
+
+    private boolean fromUser;
 
     private ServiceConnection connection;
     private PlayService.PlayBinder playBinder;
 
-    private int background;
+    private int backgroundType;
 
     public SetupFragment() {
         // Required empty public constructor
@@ -53,6 +85,7 @@ public class SetupFragment extends Fragment implements View.OnClickListener, Com
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_setup, container, false);
+        ButterKnife.bind(this, view);
         initView(view);
 /*        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,7 +109,24 @@ public class SetupFragment extends Fragment implements View.OnClickListener, Com
         parentActivity.setSupportActionBar(toolbar);
         parentActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        tranWhole = view.findViewById(R.id.tran_background_whole);
+        backgroundGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                if (i == R.id.setup_girl) {
+                    backgroundType = PreferenceUtil.GIRL_BACKGROUND;
+                } else if (i == R.id.setup_inn) {
+                    backgroundType = PreferenceUtil.INN_BACKGROUND;
+                } else {
+                    backgroundType = PreferenceUtil.TRAN_BACKGROUND;
+                }
+                if (fromUser) {
+                    playBinder.setBackgroundType(backgroundType);
+                }
+//                initBackgroundType();
+            }
+        });
+//        girlButton.setChecked(true);
+/*        tranWhole = view.findViewById(R.id.tran_background_whole);
         girlWhole = view.findViewById(R.id.girl_background_whole);
         innWhole = view.findViewById(R.id.inn_background_whole);
 
@@ -86,13 +136,13 @@ public class SetupFragment extends Fragment implements View.OnClickListener, Com
 
         tranWhole.setOnClickListener(this);
         girlWhole.setOnClickListener(this);
-        innWhole.setOnClickListener(this);
+        innWhole.setOnClickListener(this);*/
 
 
 
     }
 
-    @Override
+/*    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tran_background_whole:
@@ -137,7 +187,7 @@ public class SetupFragment extends Fragment implements View.OnClickListener, Com
             default:
                 break;
         }
-    }
+    }*/
 
 
     private void initService() {
@@ -145,29 +195,25 @@ public class SetupFragment extends Fragment implements View.OnClickListener, Com
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 playBinder = (PlayService.PlayBinder) service;
-                background = playBinder.getBackgroundType();
-                initBackgroundSwitch();
-                playBinder.setSetupCallBack(new PlayService.SetupCallBack() {
-                    @Override
-                    public void onBackgroundChange(int background) {
-                        initBackgroundSwitch();
-                    }
-                });
+                backgroundType = playBinder.getBackgroundType();
+                initBackgroundType();
+//                initBackgroundSwitch();
 
-                tranSwitch.setOnCheckedChangeListener(SetupFragment.this);
-                girlSwitch.setOnCheckedChangeListener(SetupFragment.this);
-                innSwitch.setOnCheckedChangeListener(SetupFragment.this);
+
+//                tranSwitch.setOnCheckedChangeListener(SetupFragment.this);
+//                girlSwitch.setOnCheckedChangeListener(SetupFragment.this);
+//                innSwitch.setOnCheckedChangeListener(SetupFragment.this);
             }
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
-                playBinder.setSetupCallBack(null);
+
             }
         };
     }
 
 
-    private void initTranSwitch() {
+/*    private void initTranSwitch() {
         tranSwitch.setChecked(background == PreferenceUtil.TRAN_BACKGROUND);
     }
 
@@ -177,12 +223,24 @@ public class SetupFragment extends Fragment implements View.OnClickListener, Com
 
     private void initInnSwitch() {
         innSwitch.setChecked(background == PreferenceUtil.INN_BACKGROUND);
-    }
+    }*/
 
-    private void initBackgroundSwitch() {
+/*    private void initBackgroundSwitch() {
         initTranSwitch();
         initGirlSwitch();
         initInnSwitch();
+    }*/
+
+    private void initBackgroundType() {
+        if (backgroundType == PreferenceUtil.GIRL_BACKGROUND) {
+            backgroundGroup.check(R.id.setup_girl);
+        } else if (backgroundType == PreferenceUtil.INN_BACKGROUND) {
+            backgroundGroup.check(R.id.setup_inn);
+        } else {
+            backgroundGroup.check(R.id.setup_trans);
+        }
+
+        fromUser = true;
     }
 
 }

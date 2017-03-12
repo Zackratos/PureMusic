@@ -9,8 +9,75 @@
     <include layout="@layout/toolbar_layout"
         android:id="@+id/setup_toolbar"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="16dp"
+        android:padding="5dp"
+        android:background="@drawable/card_background">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginBottom="10dp"
+            android:text="背景图片"
+            android:textColor="@android:color/white"/>
+
+        <RadioGroup
+            android:id="@+id/setup_background_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/setup_trans"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="透明"
+                android:textColor="@android:color/white"
+                android:textSize="18dp"/>
+
+            <RadioButton
+                android:id="@+id/setup_girl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="妹子"
+                android:textColor="@android:color/white"
+                android:textSize="18dp"/>
+
+            <RadioButton
+                android:id="@+id/setup_inn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="内置"
+                android:textColor="@android:color/white"
+                android:textSize="18dp"/>
+
+        </RadioGroup>
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/card_background"
+        android:layout_margin="16dp"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18dp"
+            android:textColor="@android:color/white"
+            android:text="还要增加哪些设置，大家有什么好的建议吗？"/>
+
+    </FrameLayout>
+
     <!-- TODO: Update blank fragment layout -->
-    <RelativeLayout
+<!--    <RelativeLayout
         android:id="@+id/tran_background_whole"
         android:layout_width="match_parent"
         android:layout_height="60dp"
@@ -84,5 +151,5 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
             android:layout_alignParentRight="true"/>
-    </RelativeLayout>
+    </RelativeLayout>-->
 </LinearLayout>

@@ -19,6 +19,9 @@ import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.NotificationTarget;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
@@ -30,7 +33,7 @@ public class PlayService extends Service {
     private boolean hadLoadMusics;
 
     private MainCallBack mainCallBack;
-    private SetupCallBack setupCallBack;
+//    private SetupCallBack setupCallBack;
 
     private MediaPlayer mp;
     private int current;
@@ -60,7 +63,7 @@ public class PlayService extends Service {
         Log.d("TAG", "onBind");
         PlayBinder playBinder = new PlayBinder();
 
-        initBroadcastReceiver(playBinder);
+//        initBroadcastReceiver(playBinder);
         return playBinder;
     }
 
@@ -129,7 +132,7 @@ public class PlayService extends Service {
         changeMusic(musics.get(current));*/
 
 
-
+        initBroadcastReceiver();
 
 
         updateUIHandler = new Handler();
@@ -166,7 +169,31 @@ public class PlayService extends Service {
     }
 
 
-    private void initBroadcastReceiver(final PlayBinder playBinder) {
+    private void initMusicList() {
+        final Handler handler = new Handler();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                musics = Music.getMusicList(PlayService.this);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (musics != null && musics.size() > current) {
+                            hadLoadMusics = true;
+                            if (mainCallBack != null) {
+                                mainCallBack.setMusics(musics);
+                            }
+                        }
+                        changeMusic();
+                        popNotification(musics.get(current));
+                    }
+                });
+            }
+        }).start();
+    }
+
+
+    private void initBroadcastReceiver() {
 //        broadcastManager = LocalBroadcastManager.getInstance(this);
         notificationReceiver = new BroadcastReceiver() {
             @Override
@@ -174,12 +201,14 @@ public class PlayService extends Service {
                 Log.d("TAG", "onReceive");
                 if (intent != null) {
                     if (intent.getAction().equals(getPackageName() + "PLAY")) {
-                        Log.d("TAG", "play");
-                        playBinder.onClickPlay();
+                        clickPlay();
+//                        playBinder.onClickPlay();
                     } else if (intent.getAction().equals(getPackageName() + "NEXT")) {
-                        playBinder.onClickNext();
+                        clickNext();
+//                        playBinder.onClickNext();
                     } else if (intent.getAction().equals(getPackageName() + "PREVIOUS")) {
-                        playBinder.onClickPrevious();
+                        clickPrevious();
+//                        playBinder.onClickPrevious();
                     }
                 }
             }
@@ -199,7 +228,62 @@ public class PlayService extends Service {
     private void popNotification(final Music music) {
 //        if (musics != null && musics.size() > current) {
 //            Music music = musics.get(current);
-        final Handler handler = new Handler(new Handler.Callback() {
+        Intent intent = MainActivity.newIntent(PlayService.this);
+        PendingIntent pi = PendingIntent.getActivity(PlayService.this, 0, intent, 0);
+        RemoteViews rv = new RemoteViews(getPackageName(), R.layout.notification_layout);
+
+        rv.setImageViewResource(R.id.notification_play, mp.isPlaying() ? R.drawable.pause_icon : R.drawable.play_icon);
+        rv.setTextViewText(R.id.notification_title, music.getTitle() == null ? music.getName() : music.getTitle());
+        rv.setTextViewText(R.id.notification_artist, music.getArtist());
+
+        Intent playIntent = new Intent(getPackageName() + "PLAY");
+        PendingIntent playPi = PendingIntent.getBroadcast(PlayService.this, 0, playIntent, 0);
+        Intent nextIntent = new Intent(getPackageName() + "NEXT");
+        PendingIntent nextPi = PendingIntent.getBroadcast(PlayService.this, 0, nextIntent, 0);
+        Intent previousIntent = new Intent(getPackageName() + "PREVIOUS");
+        PendingIntent previousPi = PendingIntent.getBroadcast(PlayService.this, 0, previousIntent, 0);
+
+        rv.setOnClickPendingIntent(R.id.notification_play, playPi);
+        rv.setOnClickPendingIntent(R.id.notification_next, nextPi);
+        rv.setOnClickPendingIntent(R.id.notification_previous, previousPi);
+
+
+        Notification notification = new NotificationCompat.Builder(PlayService.this)
+                .setContentTitle(music.getTitle() == null ? music.getName() : music.getTitle())
+                .setContentText(music.getArtist())
+//                .setLargeIcon((Bitmap) message.obj)
+                .setContentIntent(pi)
+                .setSmallIcon(R.drawable.notification_icon)
+                .setCustomBigContentView(rv)
+                .build();
+
+        startForeground(1, notification);
+
+        final NotificationTarget bigTarget = new NotificationTarget(
+                this, rv, R.id.notification_cover, notification, 1
+        );
+
+        final Handler handler = new Handler();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final byte[] model = Music.getAlbumByte(music.getPath());
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Glide.with(PlayService.this)
+                                .load(model)
+                                .asBitmap()
+                                .error(R.drawable.album_icon)
+                                .into(bigTarget);
+                    }
+                });
+
+            }
+        }).start();
+
+
+/*        final Handler handler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message message) {
 
@@ -250,7 +334,7 @@ public class PlayService extends Service {
                 msg.obj = bitmap;
                 handler.sendMessage(msg);
             }
-        }).start();
+        }).start();*/
 
 
 //        }
@@ -279,7 +363,7 @@ public class PlayService extends Service {
                 e.printStackTrace();
             }
 
-            popNotification(music);
+
 
 //            hadLoadMusics = true;
 
@@ -294,6 +378,8 @@ public class PlayService extends Service {
         mp.start();
         updateUIHandler.removeCallbacks(updateUIRunnable);
         updateUIHandler.post(updateUIRunnable);
+
+        popNotification(musics.get(current));
     }
 
     private void pausePlay() {
@@ -302,6 +388,8 @@ public class PlayService extends Service {
         mp.pause();
 
         updateUIHandler.removeCallbacks(updateUIRunnable);
+
+        popNotification(musics.get(current));
     }
 
     private void changeMusicNext() {
@@ -323,10 +411,25 @@ public class PlayService extends Service {
     }
 
     private void changeMusicPrevious() {
-        int temp = current;
+        if (cycle == PreferenceUtil.ALL_CYCLE) {
+            last = current;
+            if (current > 0) {
+                current--;
+            } else {
+                current = musics.size() - 1;
+            }
+            changeMusic();
+        } else {
+            if (current > 0) {
+                last = current;
+                current--;
+                changeMusic();
+            }
+        }
+/*        int temp = current;
         current = last;
         last = temp;
-        changeMusic();
+        changeMusic();*/
     }
 
     private void changeMusicRandom() {
@@ -344,9 +447,13 @@ public class PlayService extends Service {
                 startPlay();
             }
 
+
             if (mainCallBack != null) {
                 mainCallBack.initPlayView(mp.isPlaying());
             }
+
+
+
         }
     }
 
@@ -367,10 +474,18 @@ public class PlayService extends Service {
 
     private void clickPrevious() {
         boolean isPlaying = mp.isPlaying();
-        changeMusicPrevious();
+        if (random) {
+            changeMusicRandom();
+        } else {
+            changeMusicPrevious();
+        }
         if (isPlaying) {
             startPlay();
         }
+/*        changeMusicPrevious();
+        if (isPlaying) {
+            startPlay();
+        }*/
     }
 
 
@@ -410,6 +525,7 @@ public class PlayService extends Service {
 
         public void onClickPlay() {
             clickPlay();
+
         }
 
 
@@ -502,44 +618,8 @@ public class PlayService extends Service {
         }
 
 
-        public void initMusicList() {
-
-/*            final Handler handler = new Handler(new Handler.Callback() {
-                @Override
-                public boolean handleMessage(Message msg) {
-                    if (msg.what == 0 && musics != null && musics.size() > current) {
-                        if (mainCallBack != null) {
-                            mainCallBack.setMusics(musics);
-                        }
-                        changeMusic(current);
-                    }
-                    return false;
-                }
-            });*/
-            final Handler handler = new Handler();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    if (musics == null) {
-                        musics = Music.getMusicList(PlayService.this);
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (musics != null && musics.size() > current) {
-                                    hadLoadMusics = true;
-                                    if (mainCallBack != null) {
-                                        mainCallBack.setMusics(musics);
-                                    }
-                                }
-                                changeMusic();
-                            }
-                        });
-//                        Message msg = new Message();
-//                        msg.what = 0;
-//                        handler.sendMessage(msg);
-                    }
-                }
-            }).start();
+        public void onInitMusicList() {
+            PlayService.this.initMusicList();
         }
 
         public Music getCurrentMusic() {
@@ -579,9 +659,9 @@ public class PlayService extends Service {
 
         public void setBackgroundType(int background) {
             PlayService.this.backgroundType = background;
-            if (setupCallBack != null) {
+/*            if (setupCallBack != null) {
                 setupCallBack.onBackgroundChange(PlayService.this.backgroundType);
-            }
+            }*/
             if (mainCallBack != null) {
                 String path = null;
                 if (musics != null && musics.size() > current) {
@@ -592,9 +672,9 @@ public class PlayService extends Service {
 
         }
 
-        public void setSetupCallBack(SetupCallBack setupCallBack) {
+/*        public void setSetupCallBack(SetupCallBack setupCallBack) {
             PlayService.this.setupCallBack = setupCallBack;
-        }
+        }*/
     }
 
 
@@ -609,9 +689,9 @@ public class PlayService extends Service {
         void onBackgroundTypeChange(int backgroundType, String path);
     }
 
-    public interface SetupCallBack {
+/*    public interface SetupCallBack {
         void onBackgroundChange(int background);
-    }
+    }*/
 
 /*    public void setCallBack(CallBack mainCallBack) {
         this.mainCallBack = mainCallBack;

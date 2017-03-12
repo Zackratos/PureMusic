@@ -111,6 +111,22 @@ public class MusicListFragment extends Fragment {
     public void setMusics(final List<Music> musics) {
         this.musics = musics;
         listAdapter.notifyDataSetChanged();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (Music music : musics) {
+                    music.setModel(Music.getAlbumByte(music.getPath()));
+                }
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        listAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        }).start();
+
 /*        final Handler handler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
@@ -169,6 +185,7 @@ public class MusicListFragment extends Fragment {
             albumView.setText(music.getAlbum());
             artistView.setText(music.getArtist());
             playingView.setVisibility(position == current ? View.VISIBLE : View.INVISIBLE);
+            Glide.with(MusicListFragment.this).load(music.getModel()).placeholder(R.drawable.album_icon).into(iconView);
 /*            new Thread(new Runnable() {
                 @Override
                 public void run() {

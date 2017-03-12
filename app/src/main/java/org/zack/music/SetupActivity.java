@@ -10,8 +10,7 @@ public class SetupActivity extends SingleFragmentActivity {
 
 
     public static Intent newIntent(Context context) {
-        Intent intent = new Intent(context, SetupActivity.class);
-        return intent;
+        return new Intent(context, SetupActivity.class);
     }
 
     @Override
