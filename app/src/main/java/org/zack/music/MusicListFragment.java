@@ -1,7 +1,6 @@
 package org.zack.music;
 
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,7 +21,7 @@ import java.util.List;
 public class MusicListFragment extends Fragment {
 
 
-    private MainLeftListener listener;
+    private ListCallBack callBack;
 
 
     private List<Music> musics;
@@ -220,8 +219,8 @@ public class MusicListFragment extends Fragment {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (listener != null) {
-                        listener.clickPosition(position);
+                    if (callBack != null) {
+                        callBack.clickPosition(position);
                     }
                 }
             });
@@ -275,11 +274,11 @@ public class MusicListFragment extends Fragment {
     }
 
 
-    public void setMainLeftListener(MainLeftListener listener) {
-        this.listener = listener;
+    public void setListCallBack(ListCallBack callBack) {
+        this.callBack = callBack;
     }
 
-    interface MainLeftListener {
+    interface ListCallBack {
 //        void putMusicList(List<Music> musics);
         void clickPosition(int position);
     }

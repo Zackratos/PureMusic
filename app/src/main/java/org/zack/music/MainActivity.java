@@ -5,13 +5,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -204,7 +201,7 @@ public class MainActivity extends BaseActivity {
 
         });
 
-        mlFragment.setMainLeftListener(new MusicListFragment.MainLeftListener() {
+        mlFragment.setListCallBack(new MusicListFragment.ListCallBack() {
             @Override
             public void clickPosition(int position) {
                 if (playBinder != null) {
