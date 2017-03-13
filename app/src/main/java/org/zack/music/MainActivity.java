@@ -105,7 +105,9 @@ public class MainActivity extends BaseActivity {
         if (item.getItemId() == R.id.menu_setup) {
             startActivity(SetupActivity.newIntent(this));
         } else if (item.getItemId() == R.id.menu_lyric) {
-            playBinder.onClickLyric();
+            if (playBinder != null) {
+                playBinder.onClickLyric();
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -154,37 +156,50 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onClickPlay() {
-                playBinder.onClickPlay();
+                if (playBinder != null) {
+                    playBinder.onClickPlay();
+                }
             }
 
             @Override
             public void onClickNext() {
-                playBinder.onClickNext();
+                if (playBinder != null) {
+                    playBinder.onClickNext();
+                }
             }
 
             @Override
             public void onClickPrevious() {
-                playBinder.onClickPrevious();
+                if (playBinder != null) {
+                    playBinder.onClickPrevious();
+                }
             }
 
             @Override
             public void onClickRandom() {
-                playBinder.onClickRandom();
+                if (playBinder != null) {
+                playBinder.onClickRandom();}
             }
 
             @Override
             public void onClickCycle() {
-                playBinder.onClickCycle();
+                if (playBinder != null) {
+                    playBinder.onClickCycle();
+                }
             }
 
             @Override
             public void onStartTrackingTouch() {
-                playBinder.onStartTrackingTouch();
+                if (playBinder != null) {
+                    playBinder.onStartTrackingTouch();
+                }
             }
 
             @Override
             public void onStopTrackingTouch(int progress) {
-                playBinder.onStopTrackingTouch(progress);
+                if (playBinder != null) {
+                    playBinder.onStopTrackingTouch(progress);
+                }
             }
 
         });
@@ -192,8 +207,10 @@ public class MainActivity extends BaseActivity {
         mlFragment.setMainLeftListener(new MusicListFragment.MainLeftListener() {
             @Override
             public void clickPosition(int position) {
-                playBinder.onItemClickPosition(position);
-                dl.closeDrawer(Gravity.LEFT, true);
+                if (playBinder != null) {
+                    playBinder.onItemClickPosition(position);
+                    dl.closeDrawer(Gravity.LEFT, true);
+                }
 //                playFragment.onItemClickPosition(position);
             }
         });
@@ -214,13 +231,14 @@ public class MainActivity extends BaseActivity {
                 @Override
                 public void run() {
                     final byte[] model = Music.getAlbumByte(path);
-
+//                    final Bitmap bitmap = Music.createAlbumArt(path);
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
                             Glide.with(MainActivity.this)
                                     .load(model)
                                     .into(backgroundView);
+//                            backgroundView.setImageBitmap(bitmap);
                         }
                     });
                 }

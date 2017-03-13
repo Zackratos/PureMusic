@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ public class Music {
     private String artist;
     private String path;
     private byte[] model;
-//    private Bitmap image;
+    private Bitmap image;
     private long duration;
 
     private Music(MusicBuilder builder) {
@@ -31,7 +32,7 @@ public class Music {
         artist = builder.artist;
         path = builder.path;
         model = builder.model;
-//        image = builder.image;
+        image = builder.image;
         duration = builder.duration;
     }
 
@@ -51,13 +52,13 @@ public class Music {
         this.model = model;
     }
 
-    /*    public Bitmap getImage() {
+    public Bitmap getImage() {
         return image;
     }
 
     public void setImage(Bitmap image) {
         this.image = image;
-    }*/
+    }
 
     public String getAlbum() {
         return album;
@@ -102,7 +103,22 @@ public class Music {
 
 
     public static byte[] getAlbumByte(String filePath) {
-        if (filePath != null) {
+        byte[] model = null;
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        try {
+            retriever.setDataSource(filePath);
+            model = retriever.getEmbeddedPicture();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                retriever.release();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return model;
+/*        if (filePath != null) {
             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
             try {
                 retriever.setDataSource(filePath);
@@ -118,7 +134,7 @@ public class Music {
             }
 
         }
-        return null;
+        return null;*/
     }
 
 
@@ -185,7 +201,7 @@ public class Music {
         private String artist;
         private String path;
         private byte[] model;
-//        private Bitmap image;
+        private Bitmap image;
         private long duration;
 
         public MusicBuilder title(String title) {
@@ -218,10 +234,10 @@ public class Music {
             this.model = model;
             return this;
         }
-/*        public MusicBuilder image(Bitmap image) {
+        public MusicBuilder image(Bitmap image) {
             this.image = image;
             return this;
-        }*/
+        }
 
         public MusicBuilder duration(long duration) {
             this.duration = duration;

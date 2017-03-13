@@ -117,13 +117,16 @@ public class MusicListFragment extends Fragment {
             public void run() {
                 for (Music music : musics) {
                     music.setModel(Music.getAlbumByte(music.getPath()));
+//                    music.setModel(null);
                 }
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        listAdapter.notifyDataSetChanged();
-                    }
-                });
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            listAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }
             }
         }).start();
 
