@@ -1,20 +1,28 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
+/*    signingConfigs {
         config {
             keyAlias 'Zackratos'
             keyPassword 'zackratos014937'
             storeFile file('D:/MyGithub/Zackratos.jks')
             storePassword 'zackratos014937'
         }
+    }*/
+    signingConfigs {
+        config {
+            keyAlias 'Zackratos'
+            keyPassword 'zackratos014937'
+            storeFile file('/media/zack/AA12D56112D53355/MyAndroidProjects/Music/Zackratos.jks')
+            storePassword 'zackratos014937'
+        }
     }
-    compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId "org.zack.music"
         minSdkVersion 14
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 5
         versionName "1.1.2"
         signingConfig signingConfigs.config
@@ -24,9 +32,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-/*        debug {
+        debug {
             signingConfig signingConfigs.config
-        }*/
+        }
     }
     productFlavors {
     }
@@ -35,18 +43,17 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:design:24.2.1'
-    compile 'com.android.support:recyclerview-v7:24.2.1'
-    compile 'com.android.support:support-v4:24.2.1'
-    compile 'com.android.support:cardview-v7:24.2.1'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.android.support:support-v4:25.3.1'
+    compile 'com.android.support:cardview-v7:25.3.1'
     compile 'org.adw.library:discrete-seekbar:1.0.1'
     compile 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     compile 'com.github.bumptech.glide:glide:3.7.0'
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
     //    compile 'com.github.feeeei:CircleSeekbar:v1.1.2'
     //    compile 'com.github.woxingxiao:BubbleSeekBar:v1.6'
     //    compile 'com.github.zhengken:LyricViewDemo:v1.0'
-//    compile files('libs/juniversalchardet-1.0.3.jar')
+    //    compile files('libs/juniversalchardet-1.0.3.jar')
 }
