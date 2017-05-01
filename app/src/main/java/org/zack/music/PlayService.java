@@ -7,14 +7,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -50,6 +47,9 @@ public class PlayService extends Service {
 
     private BroadcastReceiver notificationReceiver;
 
+
+    private static final String TAG = "TAG";
+
     public static Intent newIntent(Context context) {
         return new Intent(context, PlayService.class);
     }
@@ -66,9 +66,7 @@ public class PlayService extends Service {
 //        initBroadcastReceiver(playBinder);
         return playBinder;
     }
-
-
-
+    
 
     @Override
     public void onCreate() {
@@ -97,6 +95,7 @@ public class PlayService extends Service {
                     }
                 }
                 startPlay();
+                popNotification();
 /*                if (musics != null && current < musics.size()) {
                     if (cycle == PreferenceUtil.SINGLE_CYCLE) {
                         changeMusic(current);
@@ -191,6 +190,7 @@ public class PlayService extends Service {
             }
         }).start();
     }
+
 
 
     private void initBroadcastReceiver() {
@@ -350,18 +350,12 @@ public class PlayService extends Service {
             Log.d("TAG", "musicPath = " + music.getPath());
             if (mainCallBack != null) {
                 mainCallBack.onMusicChange(current, music, last, backgroundType);
-                Log.d("TAG", "mainCallBack != null");
             }
             try {
-                if (mp == null) {
-                    Log.d("TAG", "mp == null");
-                }
+
                 mp.reset();
-                Log.d("TAG", "mp.reset");
                 mp.setDataSource(music.getPath());
-                Log.d("TAG", "mp.changeMusic");
                 mp.prepare();
-                Log.d("TAG", "mp.prepare");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -382,7 +376,6 @@ public class PlayService extends Service {
         updateUIHandler.removeCallbacks(updateUIRunnable);
         updateUIHandler.post(updateUIRunnable);
 
-        popNotification();
     }
 
     private void pausePlay() {
@@ -392,7 +385,6 @@ public class PlayService extends Service {
 
         updateUIHandler.removeCallbacks(updateUIRunnable);
 
-        popNotification();
     }
 
     private void changeMusicNext() {
@@ -456,8 +448,7 @@ public class PlayService extends Service {
             if (mainCallBack != null) {
                 mainCallBack.initPlayView(mp.isPlaying());
             }
-
-
+            popNotification();
 
         }
     }
@@ -475,6 +466,7 @@ public class PlayService extends Service {
         if (isPlaying) {
             startPlay();
         }
+        popNotification();
     }
 
     private void clickPrevious() {
@@ -487,6 +479,7 @@ public class PlayService extends Service {
         if (isPlaying) {
             startPlay();
         }
+        popNotification();
 /*        changeMusicPrevious();
         if (isPlaying) {
             startPlay();
@@ -495,6 +488,7 @@ public class PlayService extends Service {
 
 
     class PlayBinder extends Binder {
+
 
         public PlayService getPlayService() {
             return PlayService.this;

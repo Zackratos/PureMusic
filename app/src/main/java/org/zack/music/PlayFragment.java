@@ -254,6 +254,7 @@ public class PlayFragment extends Fragment implements View.OnClickListener, View
     }
 
     public void updateUI(int time) {
+
         int durationSecond = getDurationSecond(time);
         String durationText = getDurationText(durationSecond);
 //        currentView.setText(durationText);

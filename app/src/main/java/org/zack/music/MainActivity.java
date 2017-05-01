@@ -16,6 +16,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,6 +39,8 @@ public class MainActivity extends BaseActivity {
     Toolbar toolbar;
 
 
+    private static final String TAG = "TAG";
+    
     private boolean hadBind;
     private ServiceConnection connection;
     private PlayService.PlayBinder playBinder;
@@ -59,6 +62,7 @@ public class MainActivity extends BaseActivity {
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: ");
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         initService();
@@ -123,6 +127,7 @@ public class MainActivity extends BaseActivity {
         super.onDestroy();
         if (hadBind) {
             unbindService(connection);
+//            playBinder.setMainCallBack(null);
         }
         if (playBinder != null && !playBinder.isPlaying()) {
             stopService(PlayService.newIntent(this));
@@ -232,9 +237,14 @@ public class MainActivity extends BaseActivity {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            Glide.with(MainActivity.this)
-                                    .load(model)
-                                    .into(backgroundView);
+                            try {
+
+                                Glide.with(MainActivity.this)
+                                        .load(model)
+                                        .into(backgroundView);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
 //                            backgroundView.setImageBitmap(bitmap);
                         }
                     });
@@ -260,11 +270,15 @@ public class MainActivity extends BaseActivity {
     }
 
     private void setBackgroundGirl(final int random) {
+        try {
 
-        Glide.with(MainActivity.this)
-                .load(getResources().getIdentifier
-                        ("background_" + random, "drawable", getPackageName()))
-                .into(backgroundView);
+            Glide.with(MainActivity.this)
+                    .load(getResources().getIdentifier
+                            ("background_" + random, "drawable", getPackageName()))
+                    .into(backgroundView);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 /*        final Handler handler = new Handler(new Handler.Callback() {
             @Override
@@ -297,6 +311,8 @@ public class MainActivity extends BaseActivity {
             setBackgroundTran();
         } else if (backgroundType == PreferenceUtil.GIRL_BACKGROUND) {
             setBackgroundGirl(new Random().nextInt(10));
+//            setBackgroundGirl(0);
+
         } else {
             setBackgroundInn(path);
         }
@@ -310,11 +326,12 @@ public class MainActivity extends BaseActivity {
 
 
     private void initService() {
+        Log.d(TAG, "initService: ");
         connection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                 playBinder = (PlayService.PlayBinder) iBinder;
-
+                Log.d(TAG, "onServiceConnected: ");
                 playBinder.setMainCallBack(new PlayService.MainCallBack() {
                     @Override
                     public void onMusicChange(int current, Music music, int last, int backgroundType) {
@@ -350,6 +367,7 @@ public class MainActivity extends BaseActivity {
 
                     @Override
                     public void updateUI(int time) {
+                        Log.d(TAG, "updateUI: ");
                         playFragment.updateUI(time);
                     }
 
