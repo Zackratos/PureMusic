@@ -286,61 +286,7 @@ public class PlayService extends Service {
 
 
         }
-/*        final Handler handler = new Handler(new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message message) {
 
-                Intent intent = MainActivity.newIntent(PlayService.this);
-                PendingIntent pi = PendingIntent.getActivity(PlayService.this, 0, intent, 0);
-                RemoteViews rv = new RemoteViews(getPackageName(), R.layout.notification_layout);
-
-                rv.setImageViewResource(R.id.notification_play, mp.isPlaying() ? R.drawable.pause_icon : R.drawable.play_icon);
-                rv.setTextViewText(R.id.notification_title, music.getTitle() == null ? music.getName() : music.getTitle());
-                rv.setTextViewText(R.id.notification_artist, music.getArtist());
-                rv.setImageViewBitmap(R.id.notification_cover, (Bitmap) message.obj);
-
-                Intent playIntent = new Intent(getPackageName() + "PLAY");
-                PendingIntent playPi = PendingIntent.getBroadcast(PlayService.this, 0, playIntent, 0);
-                Intent nextIntent = new Intent(getPackageName() + "NEXT");
-                PendingIntent nextPi = PendingIntent.getBroadcast(PlayService.this, 0, nextIntent, 0);
-                Intent previousIntent = new Intent(getPackageName() + "PREVIOUS");
-                PendingIntent previousPi = PendingIntent.getBroadcast(PlayService.this, 0, previousIntent, 0);
-
-                rv.setOnClickPendingIntent(R.id.notification_play, playPi);
-                rv.setOnClickPendingIntent(R.id.notification_next, nextPi);
-                rv.setOnClickPendingIntent(R.id.notification_previous, previousPi);
-
-
-                Notification notification = new NotificationCompat.Builder(PlayService.this)
-                        .setContentTitle(music.getTitle() == null ? music.getName() : music.getTitle())
-                        .setContentText(music.getArtist())
-                        .setLargeIcon((Bitmap) message.obj)
-                        .setContentIntent(pi)
-                        .setSmallIcon(R.drawable.notification_icon)
-                        .setCustomBigContentView(rv)
-                        .build();
-
-                startForeground(1, notification);
-                return false;
-            }
-        });
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Bitmap bitmap = Music.createAlbumArt(music.getPath());
-                if (bitmap == null) {
-                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.album_icon);
-                }
-
-                Message msg = handler.obtainMessage();
-                msg.obj = bitmap;
-                handler.sendMessage(msg);
-            }
-        }).start();*/
-
-
-//        }
     }
 
 
@@ -613,6 +559,7 @@ public class PlayService extends Service {
                 if (isPlaying) {
                     startPlay();
                 }
+                popNotification();
             }
         }
 
@@ -652,9 +599,6 @@ public class PlayService extends Service {
             return backgroundType;
         }
 
-        public void popServiceNotification() {
-            popNotification();
-        }
 
         public void setBackgroundType(int background) {
             PlayService.this.backgroundType = background;
