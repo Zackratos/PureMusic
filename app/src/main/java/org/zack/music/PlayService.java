@@ -156,7 +156,7 @@ public class PlayService extends Service {
             mp.release();
             mp = null;
         }
-        PreferenceUtil.putCurrent(this, current);
+//        PreferenceUtil.putCurrent(this, current);
         PreferenceUtil.putRandom(this, random);
         PreferenceUtil.putCycle(this, cycle);
         PreferenceUtil.putBackgroundType(this, backgroundType);
@@ -255,7 +255,7 @@ public class PlayService extends Service {
                     .setContentText(music.getArtist())
 //                .setLargeIcon((Bitmap) message.obj)
                     .setContentIntent(pi)
-                    .setSmallIcon(R.drawable.notification_icon)
+                    .setSmallIcon(R.drawable.ic_album)
                     .setCustomBigContentView(rv)
                     .build();
 
@@ -276,7 +276,7 @@ public class PlayService extends Service {
                             Glide.with(PlayService.this)
                                     .load(model)
                                     .asBitmap()
-                                    .error(R.drawable.album_icon)
+                                    .error(R.drawable.ic_notification)
                                     .into(bigTarget);
                         }
                     });
@@ -291,7 +291,9 @@ public class PlayService extends Service {
 
 
     private void changeMusic() {
+
         if (hadLoadMusics) {
+            PreferenceUtil.putCurrent(this, current);
             Music music = musics.get(current);
             Log.d("TAG", "musicPath = " + music.getPath());
             if (mainCallBack != null) {

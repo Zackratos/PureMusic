@@ -320,7 +320,7 @@ public class MainActivity extends BaseActivity {
 
     private void initLyricItem(boolean showLyric) {
         if (lyricItem !=  null) {
-            lyricItem.setIcon(showLyric ? R.drawable.lyric_icon_on : R.drawable.lyric_icon_off);
+            lyricItem.setIcon(showLyric ? R.drawable.ic_lyric_on : R.drawable.ic_lyric_off);
         }
     }
 

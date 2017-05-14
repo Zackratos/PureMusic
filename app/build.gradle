@@ -13,7 +13,7 @@ android {
         config {
             keyAlias 'Zackratos'
             keyPassword 'zackratos014937'
-            storeFile file('/media/zack/AA12D56112D53355/MyAndroidProjects/Music/Zackratos.jks')
+            storeFile file('/media/zack/AA12D56112D53355/MyAndroidProjects/PureMusic/Zackratos.jks')
             storePassword 'zackratos014937'
         }
     }
@@ -23,8 +23,8 @@ android {
         applicationId "org.zack.music"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 7
-        versionName "1.1.4"
+        versionCode 8
+        versionName "1.1.5"
         signingConfig signingConfigs.config
     }
     buildTypes {
@@ -37,6 +37,13 @@ android {
         }
     }
     productFlavors {
+    }
+
+
+    aaptOptions {
+        cruncherEnabled = false
+        useNewCruncher = false
+
     }
 }
 

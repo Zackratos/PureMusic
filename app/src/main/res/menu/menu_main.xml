@@ -5,14 +5,14 @@
     <item
         android:id="@+id/menu_lyric"
         android:title="lyric"
-        android:icon="@drawable/lyric_icon_off"
+        android:icon="@drawable/ic_lyric_off"
         app:showAsAction="always">
     </item>
 
     <item
         android:id="@+id/menu_setup"
         android:title="setup"
-        android:icon="@drawable/setup_icon"
+        android:icon="@drawable/ic_setting"
         app:showAsAction="always">
 
     </item>

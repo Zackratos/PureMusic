@@ -187,7 +187,7 @@ public class MusicListFragment extends Fragment {
             albumView.setText(music.getAlbum());
             artistView.setText(music.getArtist());
             playingView.setVisibility(position == current ? View.VISIBLE : View.INVISIBLE);
-            Glide.with(MusicListFragment.this).load(music.getModel()).placeholder(R.drawable.album_icon).into(iconView);
+            Glide.with(MusicListFragment.this).load(music.getModel()).placeholder(R.drawable.ic_album).into(iconView);
 /*            new Thread(new Runnable() {
                 @Override
                 public void run() {

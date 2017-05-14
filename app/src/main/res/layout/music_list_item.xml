@@ -23,7 +23,7 @@
         android:layout_centerVertical="true"
         android:padding="10dp"
         android:scaleType="fitXY"
-        android:src="@drawable/album_icon" />
+        android:src="@drawable/ic_album" />
 
     <ImageView
         android:id="@+id/music_playing"
