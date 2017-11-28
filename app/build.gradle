@@ -1,20 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-/*    signingConfigs {
-        config {
-            keyAlias 'Zackratos'
-            keyPassword 'zackratos014937'
-            storeFile file('D:/MyGithub/Zackratos.jks')
-            storePassword 'zackratos014937'
-        }
-    }*/
     signingConfigs {
         config {
             keyAlias 'Zackratos'
-            keyPassword 'zackratos014937'
-            storeFile file('/media/zack/AA12D56112D53355/MyAndroidProjects/PureMusic/Zackratos.jks')
-            storePassword 'zackratos014937'
+            keyPassword 'android'
+            storeFile file('../keystore/Zackratos.jks')
+            storePassword 'android'
         }
     }
     compileSdkVersion 25
@@ -25,21 +17,16 @@ android {
         targetSdkVersion 25
         versionCode 8
         versionName "1.1.5"
-        signingConfig signingConfigs.config
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-        debug {
             signingConfig signingConfigs.config
         }
     }
     productFlavors {
     }
-
-
     aaptOptions {
         cruncherEnabled = false
         useNewCruncher = false
