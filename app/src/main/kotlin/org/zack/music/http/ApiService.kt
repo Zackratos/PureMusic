@@ -11,9 +11,9 @@ import retrofit2.http.GET
  */
 interface ApiService {
 
-    @GET("PureMusic/master/internet/background/config.json")
+    @GET("PureMusic/v2.x/internet/background/config.json")
     fun getBgConfig(): Observable<Response<Girl>>
 
-    @GET("PureMusic/master/internet/update/update.json")
+    @GET("PureMusic/v2.x/internet/update/update.json")
     fun checkUpdate(): Observable<Response<Update>>
 }
