@@ -1,6 +1,31 @@
 <resources>
     <string name="app_name">PureMusic</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="open_drawer"> </string>
+    <string name="close_drawer"> </string>
+
+    <string name="music_list_item_artist">%1$s | %2$s</string>
+    <string name="menu_setup">setup</string>
+    <string name="setup_label">设置</string>
+    <string name="default_hint">未找到歌词</string>
+
+    <string name="update_title">发现新版本 %1$s</string>
+    <string name="update_update">升级</string>
+    <string name="update_refuse">取消</string>
+
+    <string name="setup_bg_parent">背景</string>
+    <string name="setup_bg_girl">妹子</string>
+    <string name="setup_bg_tran">透明</string>
+    <string name="setup_bg_song">内置</string>
+    <string name="setup_bg_custom">自定义</string>
+    <string name="setup_other_parent">其他</string>
+    <string name="setup_other_seek_tran">进度条透明</string>
+    <string name="setup_about_parent">关于</string>
+    <string name="setup_about_author">作者: Zackratos</string>
+    <string name="setup_about_qq">QQ: 869649338</string>
+    <string name="setup_about_wx">微信: Kratosbruce</string>
+    <string name="setup_about_github">开源地址: PureMusic</string>
+    <string name="setup_about_version">版本: %1$s</string>
+    <string name="setup_about_check_update">检查更新</string>
 </resources>

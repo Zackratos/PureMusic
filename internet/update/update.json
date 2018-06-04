@@ -1,0 +1,13 @@
+{
+    "data":{
+        "check": {
+            "version": "v2.0.1",
+            "fileName": "PureMusic_v2.0.1.apk",
+            "versionCode": 9,
+            "url": "https://raw.githubusercontent.com/Zackratos/PureMusic/master/update/apk/PureMusic.apk",
+            "updateContent": "1. 修复了 bug 1；\n2. 修复了 bug 2；\n3. 修复了 bug 3。"
+        }
+    },
+    "status":"ok",
+    "code":1
+}

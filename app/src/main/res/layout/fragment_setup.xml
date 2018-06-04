@@ -1,155 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:background="@color/tran_default"
     android:fitsSystemWindows="true"
-    tools:context="org.zack.music.SetupFragment">
+    android:orientation="vertical">
 
-    <include layout="@layout/toolbar_layout"
-        android:id="@+id/setup_toolbar"/>
+    <include layout="@layout/toolbar_layout" />
 
-    <LinearLayout
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="16dp"
-        android:padding="5dp"
-        android:background="@drawable/card_background">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginBottom="10dp"
-            android:text="背景图片"
-            android:textColor="@android:color/white"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="@dimen/common_padding">
 
-        <RadioGroup
-            android:id="@+id/setup_background_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <RadioButton
-                android:id="@+id/setup_trans"
-                android:layout_width="wrap_content"
+            <RadioGroup
+                android:id="@+id/rg_bg"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="透明"
-                android:textColor="@android:color/white"
-                android:textSize="18dp"/>
+                android:layout_margin="@dimen/common_margin"
+                android:background="@drawable/bg_setup_card"
+                android:padding="@dimen/common_padding">
 
-            <RadioButton
-                android:id="@+id/setup_girl"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/setup_bg_parent"
+                    android:layout_margin="@dimen/common_margin"
+                    android:textColor="@android:color/white" />
+
+                <RadioButton
+                    android:id="@+id/rb_tran"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/common_margin"
+                    android:text="@string/setup_bg_tran"
+                    android:textColor="@android:color/white"
+                    android:paddingLeft="@dimen/setup_bg_item_left"
+                    android:textSize="@dimen/setup_content_size" />
+
+                <RadioButton
+                    android:id="@+id/rb_girl"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/common_margin"
+                    android:text="@string/setup_bg_girl"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/setup_content_size"
+                    android:paddingLeft="@dimen/setup_bg_item_left"/>
+
+                <RadioButton
+                    android:id="@+id/rb_song"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/common_margin"
+                    android:paddingLeft="@dimen/setup_bg_item_left"
+                    android:text="@string/setup_bg_song"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/setup_content_size" />
+
+<!--                <RadioButton
+                    android:id="@+id/rb_custom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:paddingLeft="10dp"
+                    android:text="自定义"
+                    android:textColor="@android:color/white"
+                    android:textSize="18dp" />-->
+
+            </RadioGroup>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="妹子"
-                android:textColor="@android:color/white"
-                android:textSize="18dp"/>
+                android:orientation="vertical"
+                android:background="@drawable/bg_setup_card"
+                android:padding="@dimen/common_padding"
+                android:layout_margin="@dimen/common_margin">
 
-            <RadioButton
-                android:id="@+id/setup_inn"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/common_margin"
+                    android:text="@string/setup_other_parent"
+                    android:textColor="@android:color/white"/>
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/sc_seek_tran"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/common_margin"
+                    android:text="@string/setup_other_seek_tran"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/setup_content_size" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="内置"
-                android:textColor="@android:color/white"
-                android:textSize="18dp"/>
+                android:orientation="vertical"
+                android:layout_margin="@dimen/common_margin"
+                android:paddingLeft="@dimen/common_padding"
+                android:background="@drawable/bg_setup_card">
 
-        </RadioGroup>
-    </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/setup_about_parent"
+                    android:textColor="@android:color/white"
+                    android:layout_margin="@dimen/common_margin"/>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/card_background"
-        android:layout_margin="16dp"
-        android:padding="10dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/setup_about_author"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/setup_content_size"
+                    android:layout_margin="@dimen/common_margin"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="18dp"
-            android:textColor="@android:color/white"
-            android:text="还要增加哪些设置，大家有什么好的建议吗？"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/setup_about_qq"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/setup_content_size"
+                    android:layout_margin="@dimen/common_margin"/>
 
-    </FrameLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/setup_about_wx"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/setup_content_size"
+                    android:layout_margin="@dimen/common_margin"/>
 
-    <!-- TODO: Update blank fragment layout -->
-<!--    <RelativeLayout
-        android:id="@+id/tran_background_whole"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:orientation="horizontal"
-        android:clickable="true"
-        android:background="?android:attr/selectableItemBackground"
-        android:layout_marginTop="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:gravity="center_vertical">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="透明背景"
-            android:textSize="18dp"
-            android:textColor="@color/white"/>
-        <android.support.v7.widget.SwitchCompat
-            android:id="@+id/tran_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:layout_alignParentRight="true"/>
-    </RelativeLayout>
+                <TextView
+                    android:id="@+id/tv_github"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/setup_about_github"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/setup_content_size"
+                    android:layout_margin="@dimen/common_margin"/>
 
-    <RelativeLayout
-        android:id="@+id/girl_background_whole"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:orientation="horizontal"
-        android:clickable="true"
-        android:background="?android:attr/selectableItemBackground"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:gravity="center_vertical">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="妹子图片作背景"
-            android:textSize="18dp"
-            android:textColor="@color/white"/>
-        <android.support.v7.widget.SwitchCompat
-            android:id="@+id/girl_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:layout_alignParentRight="true"/>
-    </RelativeLayout>
+                <TextView
+                    android:id="@+id/tv_version"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/setup_about_version"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/setup_content_size"
+                    android:layout_margin="@dimen/common_margin"/>
 
-    <RelativeLayout
-        android:id="@+id/inn_background_whole"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:orientation="horizontal"
-        android:clickable="true"
-        android:background="?android:attr/selectableItemBackground"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:gravity="center_vertical">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="内置图片作背景"
-            android:textSize="18dp"
-            android:textColor="@color/white"/>
-        <android.support.v7.widget.SwitchCompat
-            android:id="@+id/inn_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:layout_alignParentRight="true"/>
-    </RelativeLayout>-->
+                <TextView
+                    android:id="@+id/tv_update"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/setup_about_check_update"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/setup_content_size"
+                    android:background="?attr/selectableItemBackground"
+                    android:layout_margin="@dimen/common_margin"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
 </LinearLayout>

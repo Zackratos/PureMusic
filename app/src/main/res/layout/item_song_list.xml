@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/music_list_item_height"
+    android:background="?attr/selectableItemBackground">
+
+    <org.zack.music.main.list.SquareImageView
+        android:id="@+id/iv_cover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_album"
+        android:layout_margin="@dimen/music_list_item_cover_marge"/>
+
+    <ImageView
+        android:id="@+id/iv_playing"
+        android:layout_width="@dimen/music_list_item_ic_playing_size"
+        android:layout_height="@dimen/music_list_item_ic_playing_size"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_chevron_right"
+        android:layout_alignParentEnd="true"
+        android:visibility="invisible"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/iv_cover"
+        android:layout_toEndOf="@id/iv_cover"
+        android:layout_toLeftOf="@id/iv_playing"
+        android:layout_toStartOf="@id/iv_playing">
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:textSize="@dimen/music_list_item_title_size"
+            android:textColor="@android:color/white" />
+
+        <TextView
+            android:id="@+id/tv_artist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:maxLines="1"
+            android:textSize="@dimen/music_list_item_artist_size"
+            tools:ignore="SpUsage" />
+
+    </LinearLayout>
+
+</RelativeLayout>

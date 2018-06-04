@@ -3,19 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_lyric"
-        android:title="lyric"
-        android:icon="@drawable/ic_lyric_off"
-        app:showAsAction="always">
-    </item>
-
-    <item
         android:id="@+id/menu_setup"
-        android:title="setup"
-        android:icon="@drawable/ic_setting"
+        android:title="@string/menu_setup"
+        android:icon="@drawable/ic_settings"
         app:showAsAction="always">
 
     </item>
-
-
 </menu>

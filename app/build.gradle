@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
 /*    signingConfigs {
@@ -23,8 +25,8 @@ android {
         applicationId "org.zack.music"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 8
-        versionName "1.1.5"
+        versionCode 9
+        versionName "2.0.0"
         signingConfig signingConfigs.config
     }
     buildTypes {
@@ -45,20 +47,43 @@ android {
         useNewCruncher = false
 
     }
+
+    sourceSets{
+        main.java.srcDirs +='src/main/kotlin'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:26.1.0'
-    compile 'com.android.support:design:26.1.0'
-    compile 'com.android.support:recyclerview-v7:26.1.0'
-    compile 'com.android.support:support-v4:26.1.0'
-    compile 'com.android.support:cardview-v7:26.1.0'
-    compile 'org.adw.library:discrete-seekbar:1.0.1'
-    compile 'com.jakewharton:butterknife:8.8.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-    compile 'com.github.bumptech.glide:glide:3.8.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    implementation 'me.yokeyword:fragmentation:1.3.3'
+    implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.5@aar'
+    implementation 'com.github.bumptech.glide:glide:3.8.0'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:recyclerview-v7:26.1.0'
+    implementation 'org.adw.library:discrete-seekbar:1.0.1'
+    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
+    implementation 'com.tencent.bugly:crashreport:latest.release'
+//    implementation 'com.android.support:support-v4:26.1.0'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+
+
+//    compile 'com.android.support:cardview-v7:26.1.0'
+
+//    compile 'com.jakewharton:butterknife:8.8.1'
+//    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
     //    compile 'com.github.feeeei:CircleSeekbar:v1.1.2'
     //    compile 'com.github.woxingxiao:BubbleSeekBar:v1.6'
     //    compile 'com.github.zhengken:LyricViewDemo:v1.0'

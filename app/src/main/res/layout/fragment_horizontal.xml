@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ll_root"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <org.zack.music.LyricView
+        android:id="@+id/lv_main"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:hintColor="@android:color/white"
+        app:textColor="@color/half_transparent"
+        app:highlightColor="@android:color/white" />
+
+<!--    <SeekBar
+        android:id="@+id/sb_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:thumb="@android:color/transparent"
+        android:progressDrawable="@drawable/style_seekbar"
+        android:paddingLeft="-5dp"
+        android:paddingRight="-5dp"
+        android:visibility="gone"/>-->
+
+    <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+        android:id="@+id/dsb_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="-5dp"
+        android:layout_marginRight="-5dp"
+        app:dsb_trackColor="@color/half_transparent"
+        app:dsb_progressColor="@android:color/white"
+        app:dsb_rippleColor="@android:color/transparent"
+        app:dsb_indicatorPopupEnabled="false"
+        app:dsb_thumbSize="0dp"/>
+<!--    <com.xw.repo.BubbleSeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:bsb_auto_adjust_section_mark="true"
+        app:bsb_second_track_color="@android:color/transparent"
+        app:bsb_section_count="1"
+        app:bsb_section_text_position="below_section_mark"
+        app:bsb_show_section_mark="false"
+        app:bsb_show_section_text="false"
+        app:bsb_show_thumb_text="false"
+        app:bsb_thumb_text_size="18sp"
+        app:bsb_touch_to_seek="false"/>-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/tv_current"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/play_horizontal_time"
+            android:text="00:00"/>
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/tv_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/play_horizontal_time"
+            android:text="00:00"/>
+
+    </LinearLayout>
+
+</LinearLayout>

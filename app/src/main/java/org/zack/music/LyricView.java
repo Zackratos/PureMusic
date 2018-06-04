@@ -1,9 +1,5 @@
 package org.zack.music;
 
-/**
- * Created by IVY on 2017/2/8.
- */
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -153,9 +149,8 @@ public class LyricView extends View {
         return super.dispatchTouchEvent(event);
     }
 
-    @Override
+/*    @Override
     public boolean onTouchEvent(MotionEvent event) {
-
         if (mVelocityTracker == null) {
             mVelocityTracker = VelocityTracker.obtain();
         }
@@ -178,7 +173,7 @@ public class LyricView extends View {
         }
         invalidateView();
         return true;
-    }
+    }*/
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
@@ -239,7 +234,7 @@ public class LyricView extends View {
                         mTextPaint.setAlpha(26 + (int) (23000.0f * (getHeight() - y) / mShaderWidth * 0.01f));
                     }
                 } else {
-                    mTextPaint.setAlpha(255);
+//                    mTextPaint.setAlpha(255);
                 }
 
                 if (mEnableLineFeed) {
@@ -265,7 +260,7 @@ public class LyricView extends View {
         mIsShade = ta.getBoolean(R.styleable.LyricView_fadeInFadeOut, false);
         mDefaultHint = ta.getString(R.styleable.LyricView_hint) != null
                 ? ta.getString(R.styleable.LyricView_hint)
-                : "No Lyrics";
+                : getResources().getString(R.string.default_hint);
         mHintColor = ta.getColor(R.styleable.LyricView_hintColor, Color.parseColor("#FFFFFF"));
         mDefaultColor = ta.getColor(R.styleable.LyricView_textColor, Color.parseColor("#8D8D8D"));
         mHighLightColor = ta.getColor(R.styleable.LyricView_highlightColor, Color.parseColor("#FFFFFF"));
@@ -292,6 +287,7 @@ public class LyricView extends View {
 
         if (file == null || !file.exists()) {
             reset();
+            mCurrentLyricFilePath = "";
             return;
         } else if (file.getPath().equals(mCurrentLyricFilePath)) {
             return;

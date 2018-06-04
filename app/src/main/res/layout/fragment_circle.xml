@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fl_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <org.zack.music.CircularSeekBar
+        android:id="@+id/csb_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/play_circle_margin"
+        android:layout_gravity="center"
+        app:circle_color="@color/half_transparent"
+        app:circle_progress_color="@android:color/white"
+        app:circle_stroke_width="@dimen/play_circle_stroke"
+        app:pointer_color="@android:color/transparent"
+        app:pointer_halo_color="@android:color/transparent"
+        app:pointer_halo_color_ontouch="@android:color/transparent">
+
+    </org.zack.music.CircularSeekBar>
+</FrameLayout>

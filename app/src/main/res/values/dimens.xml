@@ -2,4 +2,26 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="common_padding">5dp</dimen>
+    <dimen name="common_margin">5dp</dimen>
+    <dimen name="play_button_group_height">60dp</dimen>
+    <dimen name="play_small_button_size">40dp</dimen>
+
+    <dimen name="music_list_item_height">60dp</dimen>
+    <dimen name="music_list_item_cover_marge">10dp</dimen>
+    <dimen name="music_list_item_ic_playing_size">30dp</dimen>
+    <dimen name="music_list_item_title_size">16dp</dimen>
+    <dimen name="music_list_item_artist_size">14dp</dimen>
+
+    <dimen name="play_circle_margin">20dp</dimen>
+    <dimen name="play_circle_stroke">5dp</dimen>
+
+    <dimen name="play_horizontal_time">18dp</dimen>
+
+    <dimen name="setup_bg_item_left">10dp</dimen>
+    <dimen name="setup_content_size">18dp</dimen>
+
+    <dimen name="notification_play_height">120dp</dimen>
+    <dimen name="notification_text_size">16dp</dimen>
 </resources>
