@@ -25,19 +25,14 @@ import org.zack.music.tools.SongLoader
 import java.util.concurrent.TimeUnit
 import android.content.Context
 import android.content.IntentFilter
+import android.net.Uri
 import android.support.annotation.RequiresApi
 import android.widget.RemoteViews
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.NotificationTarget
 import org.zack.music.LauncherActivity
 import org.zack.music.R
-import org.zack.music.http.ApiService
-import org.zack.music.http.Girl
-import org.zack.music.http.RxUtils
 import org.zack.music.rxplayer.PlayerObservable
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 import java.util.Random
 
@@ -61,6 +56,7 @@ class PlayService: Service() {
     private var lastPosition = 0
 
     private lateinit var config: Config
+    private var notificationControl: Boolean = false
 
     private val randomList: MutableList<Int> by lazy { ArrayList<Int>() }
 
@@ -73,6 +69,7 @@ class PlayService: Service() {
         super.onCreate()
         // 先获取 config，防止 config 的数据为空
         config = ConfigHelper.getInstance().getConfig()
+        notificationControl = ConfigHelper.getInstance().isNotificationControl()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mp.setAudioAttributes(AudioAttributes.Builder()
@@ -148,21 +145,25 @@ class PlayService: Service() {
         PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
-    private var target: NotificationTarget? = null
+//    private var target: NotificationTarget? = null
 
-    private fun getNotification(song: Song): Notification {
-        val rm = getRm(song)
-        val notification =  NotificationCompat.Builder(this, CHANNEL)
+    private fun getNotification(song: Song, rm: RemoteViews): Notification {
+        val build = NotificationCompat.Builder(this, CHANNEL)
+                .setContentTitle(song.title)
+                .setContentText(song.artistName)
+                .setSmallIcon(R.drawable.ic_music)
+                .setContentIntent(pi)
+        if (notificationControl) {
+            build.setCustomBigContentView(rm)
+        }
+        return build.build()
+/*        return  NotificationCompat.Builder(this, CHANNEL)
                 .setContentTitle(song.title)
                 .setContentText(song.artistName)
                 .setSmallIcon(R.drawable.ic_music)
                 .setCustomBigContentView(rm)
                 .setContentIntent(pi)
-                .build()
-//        if (target == null) {
-            target = NotificationTarget(this, rm, R.id.iv_cover, notification, 1)
-//        }
-        return notification
+                .build()*/
     }
 
 
@@ -181,26 +182,18 @@ class PlayService: Service() {
         remoteViews
     }
 
-    private fun getRm(song: Song): RemoteViews {
-        rm.setTextViewText(R.id.tv_artist, song.artistName)
-        rm.setTextViewText(R.id.tv_title, song.title)
-        rm.setTextViewText(R.id.tv_album, song.albumName)
-        rm.setImageViewResource(R.id.iv_play, when {
-            isMpPlaying() -> R.drawable.ic_pause
-            else -> R.drawable.ic_play_arrow
-        })
-        val targetDisposable = Observable.just(song)
-                .subscribeOn(Schedulers.io())
-                .map { song.getCoverUri() }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    Glide.with(this).load(it)
-                            .asBitmap()
-                            .error(R.drawable.ic_album)
-                            .into(target) }, {
-                    rm.setImageViewResource(R.id.iv_cover, R.drawable.ic_album)
-                })
-        addDisposable(targetDisposable)
+    private fun getRm(song: Song, cutSong: Boolean, playStatus: Boolean): RemoteViews {
+        if (cutSong) {
+            rm.setTextViewText(R.id.tv_artist, song.artistName)
+            rm.setTextViewText(R.id.tv_title, song.title)
+            rm.setTextViewText(R.id.tv_album, song.albumName)
+        }
+        if (playStatus) {
+            rm.setImageViewResource(R.id.iv_play, when {
+                isMpPlaying() -> R.drawable.ic_pause
+                else -> R.drawable.ic_play_arrow
+            })
+        }
         return rm
     }
 
@@ -222,15 +215,34 @@ class PlayService: Service() {
         getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     }
 
+//    private var target: NotificationTarget? = null
+
     /**
      * 显示 notification
      */
-    private fun showNotification(song: Song) {
+    private fun updateNotification(song: Song, cutSong: Boolean, playStatus: Boolean) {
+        val rm = getRm(song, cutSong, playStatus)
+        val notification = getNotification(song, rm)
         if (notificationShowed) {
-            notificationManager.notify(1, getNotification(song))
+            notificationManager.notify(1, notification)
         } else {
-            startForeground(1, getNotification(song))
+            startForeground(1, notification)
             notificationShowed = true
+        }
+        if (cutSong && notificationControl) {
+            val target = NotificationTarget(this, rm, R.id.iv_cover, notification, 1)
+            Observable.create<Uri> {
+                it.onNext(song.getCoverUri())
+                it.onComplete()
+            }.subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        Glide.with(this)
+                                .loadFromMediaStore(it)
+                                .asBitmap()
+                                .error(R.drawable.ic_album)
+                                .into(target)
+                    }, { rm.setImageViewResource(R.id.iv_cover, R.drawable.ic_album) })
         }
     }
 
@@ -374,7 +386,7 @@ class PlayService: Service() {
                 }
                 .subscribe {
                     mp.start()
-                    showNotification(songInfo.song)
+                    updateNotification(songInfo.song, true, true)
                 }
     }
 
@@ -458,15 +470,23 @@ class PlayService: Service() {
             else mpStart()
             RxBus.getInstance().post(PlayOrPause(isMpPlaying()))
             val songs = songs ?: return
-            showNotification(songs[config.position])
+            updateNotification(songs[config.position], false, true)
         } else {
             val position = config.position
             if (position == -1) return
             val songs = songs ?: return
             val songInfo = SongInfo(songs[position], position)
             startPlaySong(songInfo, false)
-//            showNotification(songs[position])
+//            updateNotification(songs[position])
         }
+    }
+
+    fun setNotificationControl(control: Boolean) {
+        this.notificationControl = control
+        if (songs == null) return
+        val position = config.position
+        if (position == -1) return
+        updateNotification(songs!![position], true, true)
     }
 
 
@@ -565,6 +585,10 @@ class PlayService: Service() {
             if (!service.isMpPlaying()) {
                 service.stopSelf()
             }
+        }
+
+        fun setNotificationControl(control: Boolean) {
+            service.setNotificationControl(control)
         }
 
     }

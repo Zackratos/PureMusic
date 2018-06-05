@@ -21,6 +21,7 @@
     <string name="setup_bg_custom">自定义</string>
     <string name="setup_other_parent">其他</string>
     <string name="setup_other_seek_tran">进度条透明</string>
+    <string name="setup_other_notification_control">通知栏控制</string>
     <string name="setup_about_parent">关于</string>
     <string name="setup_about_author">作者: Zackratos</string>
     <string name="setup_about_qq">QQ: 869649338</string>

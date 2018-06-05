@@ -29,6 +29,7 @@ class ConfigHelper private constructor() {
         private const val SEEK_TRAN = "seek_tran"
 
         private const val CUSTOM_PATH = "custom_path"
+        private const val NOTIFICATION_CONTROL = "notification_control"
     }
 
     fun getCycle(): Int {
@@ -95,6 +96,14 @@ class ConfigHelper private constructor() {
 
     fun putSeekTran(seekTran: Boolean) {
         sp.edit().putBoolean(SEEK_TRAN, seekTran).apply()
+    }
+
+    fun isNotificationControl(): Boolean {
+        return sp.getBoolean(NOTIFICATION_CONTROL, false)
+    }
+
+    fun putNotificationControl(control: Boolean) {
+        sp.edit().putBoolean(NOTIFICATION_CONTROL, control).apply()
     }
 
     fun getCustomBgPath(): String? {

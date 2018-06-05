@@ -80,6 +80,7 @@ class SetupFragment: BaseFragment() {
         })
 
         sc_seek_tran.isChecked = ConfigHelper.getInstance().isSeekTran()
+        sc_notification_control.isChecked = ConfigHelper.getInstance().isNotificationControl()
 
         rg_bg.setOnCheckedChangeListener { _, checkedId ->
             val type = when(checkedId) {
@@ -95,6 +96,11 @@ class SetupFragment: BaseFragment() {
         sc_seek_tran.setOnCheckedChangeListener { _, isChecked ->
             RxBus.getInstance().post(SeekBarChange(isChecked))
             ConfigHelper.getInstance().putSeekTran(isChecked)
+        }
+
+        sc_notification_control.setOnCheckedChangeListener { _, isChecked ->
+            parentActivity.playBinder?.setNotificationControl(isChecked)
+            ConfigHelper.getInstance().putNotificationControl(isChecked)
         }
 
         tv_update.setOnClickListener {

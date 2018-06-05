@@ -100,6 +100,15 @@
                     android:textColor="@android:color/white"
                     android:textSize="@dimen/setup_content_size" />
 
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/sc_notification_control"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/common_margin"
+                    android:text="@string/setup_other_notification_control"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/setup_content_size" />
+
             </LinearLayout>
 
             <LinearLayout
