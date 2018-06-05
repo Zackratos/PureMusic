@@ -24,7 +24,6 @@ class UpdateDialog: DialogFragment() {
 
     companion object {
         private const val CHECK = "check"
-        private const val apkUrl = "http://download.sj.qq.com/upload/connAssitantDownload/upload/MobileAssistant_1.apk"
         fun newInstance(check: Update.Check): UpdateDialog {
             val dialog  = UpdateDialog()
             val arg = Bundle()
@@ -70,7 +69,7 @@ class UpdateDialog: DialogFragment() {
             deleteFile(folder)
         }
         val downloadManager = activity.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-        val request = DownloadManager.Request(Uri.parse(apkUrl))
+        val request = DownloadManager.Request(Uri.parse(url))
                 .setMimeType("application/vnd.android.package-archive")
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                 .setDestinationInExternalFilesDir(activity, Environment.DIRECTORY_DOWNLOADS, name)
