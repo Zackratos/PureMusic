@@ -3,9 +3,9 @@
         "check": {
             "version": "v2.0.1",
             "fileName": "PureMusic_v2.0.1.apk",
-            "versionCode": 9,
-            "url": "https://raw.githubusercontent.com/Zackratos/PureMusic/v2.x/internet/update/apk/PureMusic.apk",
-            "updateContent": "1. 修复了 bug 1；\n2. 修复了 bug 2；\n3. 修复了 bug 3。"
+            "versionCode": 10,
+            "url": "https://raw.githubusercontent.com/Zackratos/PureMusic/v2.x/internet/update/apk/PureMusic_v2.0.1.apk",
+            "updateContent": "1. 设置界面增加状态栏控制开关，默认关闭"
         }
     },
     "status":"ok",
