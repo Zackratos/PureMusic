@@ -9,7 +9,15 @@
 <img src="Screenshots/enframe_2018-06-04-23-37-23.png" width="270px"/>
 <img src="Screenshots/enframe_2018-06-04-23-37-32.png" width="270px"/>
 
-## v2.0 版重构要点
+## 更新日志
+
+### v2.0.2
+* 修复检查更新时下载应用宝的错误.
+
+### v2.0.1
+* 设置界面增加状态栏控制开关，默认关闭.
+
+### v2.0.0
 * 全面使用 kotlin 语言；
 * 只有一个入口 Activity，其他界面全部使用 Fragment；
 * 使用 RxJava 切换线程、开启定时器，并配合 Retrofit 进行网络请求；
