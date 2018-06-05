@@ -38,6 +38,7 @@ class ProgressDialog: DialogFragment() {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.window.setBackgroundDrawableResource(R.drawable.bg_setup_card)
+        dialog.setCanceledOnTouchOutside(false)
         return inflater?.inflate(R.layout.dialog_progress, container, false)
     }
 
